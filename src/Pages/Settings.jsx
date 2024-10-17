@@ -14,7 +14,11 @@ export function Settings() {
       <Typography style='h2' className='mb-0'>Account Settings</Typography>
       <Typography style='h4' className='text-gray-500 mt-1 mb-8'>{user?.firstName} {user?.lastName}</Typography>
       <div className='flex flex-col mx-auto max-w-full md:max-w-md'>
-        <CheckoutForm className='mt-6 w-full' />
+        <CheckoutForm
+          className='mt-6 w-full'
+          disabled={isLoading}
+          userId={user?.id}
+        />
         <ButtonLink
           className='mt-6'
           label='Manage Subscription'
