@@ -19,6 +19,7 @@ export function Settings() {
         <ButtonLink
           className='mt-6 mx-auto max-w-full md:max-w-md'
           label='Manage Subscription'
+          disabled={!user?.hasActiveSubscription}
           to='https://billing.stripe.com/p/login/test_eVa2accDp7pj9c4288' // FIXME can't be hardcoded
         />
         <Button
