@@ -7,6 +7,7 @@ export const PricingCard = ({
   highlighted = false,
   highlightText,
   title,
+  description,
   buttonText,
   price,
   features,
@@ -30,10 +31,16 @@ export const PricingCard = ({
           <span className='font-bold text-2xl -me-2'>&pound;</span>
           {' '}
           {price.unit_amount / 100}
+          {' '}
+          <span className='text-sm text-gray-500 dark:text-neutral-500'>ex. VAT</span>
         </>
       ) : <Skeleton />}
     </span>
-    <p className='mt-2 text-sm text-gray-500 dark:text-neutral-500'>All the basics for starting a new business</p>
+    {!!description && (
+      <p className='mt-2 text-sm text-gray-500 dark:text-neutral-500'>
+        {description}
+      </p>
+    )}
 
     {!!features.length && (
       <ul className='mt-7 space-y-2.5 text-sm'>
@@ -65,6 +72,7 @@ PricingCard.propTypes = {
   highlighted: PropTypes.bool,
   highlightText: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
+  description: PropTypes.string,
   buttonText: PropTypes.string.isRequired,
   price: PropTypes.object.isRequired,
   features: PropTypes.array,
