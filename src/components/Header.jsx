@@ -1,5 +1,5 @@
+import { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@workos-inc/authkit-react';
 
 import { Button } from '../components/Button';
 import { HamburgerButton } from '../components/HamburgerButton';
@@ -12,8 +12,10 @@ import UserIcon from '../icons/User';
 import { providers, projects } from '../constants';
 import { IcePerfLogo } from './IcePerfLogo';
 
+import { UserContext } from '../contexts/userContext';
+
 export function Header() {
-  const { user, isLoading, signIn, signUp } = useAuth();
+  const { user, isLoading, signIn, signUp } = useContext(UserContext);
   const location = useLocation();
 
   return (
