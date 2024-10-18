@@ -13,12 +13,23 @@ export const UserContextProvider = ({ children }) => {
     if (!user) {
       return;
     }
-    const getStripeCustomer = async () => {
+    const getStripeData = async () => {
       const customer = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-customer/${user.id}`);
       const customerResp = await customer.json();
-      setUpdatedUser({ ...user, stripeCustomerId: customerResp?.id })
+
+      const stripeCustomerId = customerResp?.id;
+      let stripeSubscriptions;
+      let hasActiveSubscription = false;
+      if (stripeCustomerId) {
+        const subscriptions = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-subscriptions/${stripeCustomerId}`);
+        const respJson = await subscriptions.json();
+        stripeSubscriptions = respJson?.subscriptions;
+        hasActiveSubscription = stripeSubscriptions?.some((s) => ['active', 'trialing'].includes(s.status));
+      }
+
+      setUpdatedUser({ ...user, stripeCustomerId, stripeSubscriptions, hasActiveSubscription });
     };
-    getStripeCustomer();
+    getStripeData();
   }, [user]);
 
   return (
