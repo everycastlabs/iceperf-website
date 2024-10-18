@@ -1,8 +1,8 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState, useContext } from 'react';
 import { useAuth } from '@workos-inc/authkit-react';
 import PropTypes from 'prop-types';
 
-export const UserContext = createContext(true);
+const UserContext = createContext(true);
 
 export const UserContextProvider = ({ children }) => {
   const { isLoading, signIn, signUp, signOut, user } = useAuth();
@@ -46,6 +46,10 @@ export const UserContextProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
+
+export const useUserContext = () => {
+  return useContext(UserContext);
+}
 
 UserContextProvider.propTypes = {
   children: PropTypes.func,

@@ -1,11 +1,11 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types'
 import { twMerge } from 'tailwind-merge';
 
 import { Button } from './Button';
 import { PricingCardsGrid } from './PricingCardsGrid';
-import { UserContext } from '../contexts/userContext';
+import { useUserContext } from '../contexts/userContext';
 import { Typography } from './Typography';
 
 export const CheckoutForm = ({ className = '' }) => {
@@ -13,7 +13,7 @@ export const CheckoutForm = ({ className = '' }) => {
   const [products, setProducts] = useState([]);
   const [prices, setPrices] = useState([]);
 
-  const { isLoading, user, signIn, signUp } = useContext(UserContext);
+  const { isLoading, user, signIn, signUp } = useUserContext();
   const location = useLocation();
 
   // get a list of products and prices from Stripe

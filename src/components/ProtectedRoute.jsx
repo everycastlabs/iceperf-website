@@ -1,11 +1,10 @@
-import { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { UserContext } from '../contexts/userContext';
+import { useUserContext } from '../contexts/userContext';
 
 export const ProtectedRoute = ({ children }) => {
-  const { isLoading, user } = useContext(UserContext);
+  const { isLoading, user } = useUserContext();
   if (!isLoading && !user) {
     return <Navigate to='/login' />;
   }

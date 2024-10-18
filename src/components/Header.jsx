@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { Button } from '../components/Button';
@@ -12,10 +11,10 @@ import UserIcon from '../icons/User';
 import { providers, projects } from '../constants';
 import { IcePerfLogo } from './IcePerfLogo';
 
-import { UserContext } from '../contexts/userContext';
+import { useUserContext } from '../contexts/userContext';
 
 export function Header() {
-  const { user, isLoading, signIn, signUp } = useContext(UserContext);
+  const { user, isLoading, signIn, signUp } = useUserContext();
   const location = useLocation();
 
   return (
