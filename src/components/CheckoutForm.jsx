@@ -4,12 +4,21 @@ import PropTypes from 'prop-types'
 import { Button } from '../components/Button';
 
 export const CheckoutForm = ({ className = '', disabled, userId }) => {
-  const [priceId, setPriceId] = useState();
+  const [selectedPriceId, setSelectedPriceId] = useState();
   const [customerId, setCustomerId] = useState('');
+  const [products, setProducts] = useState([]);
+  const [prices, setPrices] = useState([]);
 
-  // TODO ideally we should get a list of products or prices from Stripe
+  // get a list of products and prices from Stripe
   useEffect(() => {
-    setPriceId('price_1Q5VZVChTA44sQl54VmhhNHc');
+    const getPrices = async () => {
+      const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-active-products`);
+      const respJson = await resp.json();
+      setPrices(respJson.pricesList);
+      setProducts(respJson.productsList);
+    }
+    getPrices();
+    setSelectedPriceId('price_1Q5VZVChTA44sQl54VmhhNHc');
   }, []);
 
   useEffect(() => {
@@ -24,19 +33,25 @@ export const CheckoutForm = ({ className = '', disabled, userId }) => {
     getStripeCustomer();
   }, [userId]);
 
+  console.log('the prices', prices);
+  console.log('the products', products);
+
   return (
-    <form
-      className={className}
-      action={`${import.meta.env.VITE_API_BASE_URI}/api/checkout/create-session/${priceId}/${customerId}`}
-    >
-      <Button
-        type='submit'
-        className='w-full'
-        disabled={disabled}
+    <>
+      {/* <Card></Card> */}
+      <form
+        className={className}
+        action={`${import.meta.env.VITE_API_BASE_URI}/api/checkout/create-session/${selectedPriceId}/${customerId}`}
       >
-        Go To Checkout
-      </Button>
-    </form>
+        <Button
+          type='submit'
+          className='w-full'
+          disabled={disabled || !selectedPriceId}
+        >
+          Go To Checkout
+        </Button>
+      </form>
+    </>
   )
 };
 
