@@ -1,13 +1,11 @@
-import { useContext } from 'react';
-
 import { Button } from '../components/Button';
 import { ButtonLink } from '../components/ButtonLink';
 import { Layout } from '../layout/Layout';
 import { Typography } from '../components/Typography';
-import { UserContext } from '../contexts/userContext';
+import { useUserContext } from '../contexts/userContext';
 
 export function Settings() {
-  const { isLoading, signOut, user } = useContext(UserContext);
+  const { isLoading, signOut, user } = useUserContext();
 
   return (
     <Layout>
