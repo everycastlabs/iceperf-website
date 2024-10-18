@@ -38,11 +38,16 @@ export const CheckoutForm = ({ className = '' }) => {
         <Button
           type='submit'
           className='w-full md:w-52'
-          disabled={isLoading || !selectedPriceId || !user?.stripeCustomerId}
+          disabled={isLoading || !selectedPriceId || !user?.stripeCustomerId || user?.hasActiveSubscription}
         >
           Go To Checkout
         </Button>
       </form>
+      {user?.hasActiveSubscription && (
+        <p className='mt-2 text-sm text-gray-500 dark:text-neutral-500'>
+          A subscription is already active for this user
+        </p>
+      )}
     </div>
   )
 };
