@@ -1,24 +1,21 @@
-import { useAuth } from '@workos-inc/authkit-react';
+import { useContext } from 'react';
 
 import { Button } from '../components/Button';
 import { ButtonLink } from '../components/ButtonLink';
 import { Layout } from '../layout/Layout';
 import { Typography } from '../components/Typography';
 import { CheckoutForm } from '../components/CheckoutForm';
+import { UserContext } from '../contexts/userContext';
 
 export function Settings() {
-  const { isLoading, signOut, user } = useAuth();
+  const { isLoading, signOut, user } = useContext(UserContext);
 
   return (
     <Layout>
       <Typography style='h2' className='mb-0'>Account Settings</Typography>
       <Typography style='h4' className='text-gray-500 mt-1 mb-8'>{user?.firstName} {user?.lastName}</Typography>
       <div className='flex flex-col'>
-        <CheckoutForm
-          className='mt-6 w-full'
-          disabled={isLoading}
-          userId={user?.id}
-        />
+        <CheckoutForm className='mt-6 w-full' />
         <ButtonLink
           className='mt-6 mx-auto max-w-full md:max-w-md'
           label='Manage Subscription'

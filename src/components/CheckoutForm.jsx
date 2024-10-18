@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types'
 import { twMerge } from 'tailwind-merge';
 
 import { Button } from '../components/Button';
 import { PricingCardsGrid } from './PricingCardsGrid';
+import { UserContext } from '../contexts/userContext';
 
-export const CheckoutForm = ({ className = '', disabled, userId }) => {
+export const CheckoutForm = ({ className = '' }) => {
   const [selectedPriceId, setSelectedPriceId] = useState();
-  const [customerId, setCustomerId] = useState('');
   const [products, setProducts] = useState([]);
   const [prices, setPrices] = useState([]);
+
+  const { isLoading, user } = useContext(UserContext);
 
   // get a list of products and prices from Stripe
   useEffect(() => {
@@ -22,18 +24,6 @@ export const CheckoutForm = ({ className = '', disabled, userId }) => {
     getPrices();
   }, []);
 
-  useEffect(() => {
-    if (!userId) {
-      return;
-    }
-    const getStripeCustomer = async () => {
-      const customer = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-customer/${userId}`);
-      const customerResp = await customer.json();
-      setCustomerId(customerResp.id);
-    };
-    getStripeCustomer();
-  }, [userId]);
-
   return (
     <div className={twMerge('flex flex-col items-center', className)}>
       <PricingCardsGrid
@@ -43,12 +33,12 @@ export const CheckoutForm = ({ className = '', disabled, userId }) => {
         setSelectedPriceId={setSelectedPriceId}
       />
       <form
-        action={`${import.meta.env.VITE_API_BASE_URI}/api/checkout/create-session/${selectedPriceId}/${customerId}`}
+        action={`${import.meta.env.VITE_API_BASE_URI}/api/checkout/create-session/${selectedPriceId}/${user?.stripeCustomerId}`}
       >
         <Button
           type='submit'
           className='w-full md:w-52'
-          disabled={disabled || !selectedPriceId}
+          disabled={isLoading || !selectedPriceId || !user?.stripeCustomerId}
         >
           Go To Checkout
         </Button>
@@ -59,6 +49,4 @@ export const CheckoutForm = ({ className = '', disabled, userId }) => {
 
 CheckoutForm.propTypes = {
   className: PropTypes.string,
-  disabled: PropTypes.bool,
-  userId: PropTypes.string,
 };

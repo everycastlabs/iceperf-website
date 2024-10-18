@@ -12,6 +12,7 @@ import { Results } from './Pages/Results';
 import { Provider } from './Pages/Provider';
 import { Login } from './Pages/Login';
 import { Settings } from './Pages/Settings';
+import { UserContextProvider } from './contexts/userContext';
 
 function App() {
   const location = useLocation();
@@ -21,7 +22,7 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <>
+    <UserContextProvider>
       <Header />
       <Routes>
         <Route path='/' element={<Home />} />
@@ -33,7 +34,7 @@ function App() {
         <Route path='/settings' element={<ProtectedRoute> <Settings /> </ProtectedRoute>} />
       </Routes>
       <Footer />
-    </>
+    </UserContextProvider>
   );
 }
 
