@@ -18,7 +18,7 @@ export function About() {
         ICEPerf runs a series of tests with each of the TURN providers mentioned above and exports metrics to compare the results.
       </Typography>
       <Typography style='body'>
-        Learn more on the <a className='text-ipblue-900 underline' href='https://nimblea.pe/monkey-business/2024/04/30/introducing-iceperf-com/' target='_blank'>Nimble Ape blog post</a>.
+        Learn more on the <Link to='https://nimblea.pe/monkey-business/2024/04/30/introducing-iceperf-com/' target='_blank'>Nimble Ape blog post</Link>.
       </Typography>
 
       <Typography style='h3'>Description of the tests</Typography>
@@ -65,17 +65,17 @@ export function About() {
       <ul className='list-disc marker:text-ipblue-800 ps-5 space-y-2'>
         <li>
           <Typography style='body'>
-            The team present ICEPerf at <Link href='https://www.youtube.com/watch?v=kOlibSF8PsE' target='_blank' rel='noreferrer'>JanusCon 2024</Link>.
+            The team present ICEPerf at <Link to='https://www.youtube.com/watch?v=kOlibSF8PsE' target='_blank' rel='noreferrer'>JanusCon 2024</Link>.
           </Typography>
         </li>
         <li>
           <Typography style='body'>
-            Dan talks about ICEPerf as part of his <Link href='https://www.youtube.com/live/Cho556qHRaE?si=EDMBG3tBg3G41Qv1&t=17675' target='_blank' rel='noreferrer'>OpenSIPs Summit 2024 talk</Link>.
+            Dan talks about ICEPerf as part of his <Link to='https://www.youtube.com/live/Cho556qHRaE?si=EDMBG3tBg3G41Qv1&t=17675' target='_blank' rel='noreferrer'>OpenSIPs Summit 2024 talk</Link>.
           </Typography>
         </li>
         <li>
           <Typography style='body'>
-            Dan introduces ICEPerf at <Link href='https://2024.commcon.xyz/talks/introducing-iceperfcom/' target='_blank' rel='noreferrer'>CommCon 2024</Link>.
+            Dan introduces ICEPerf at <Link to='https://2024.commcon.xyz/talks/introducing-iceperfcom/' target='_blank' rel='noreferrer'>CommCon 2024</Link>.
           </Typography>
         </li>
       </ul>
