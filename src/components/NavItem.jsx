@@ -10,7 +10,7 @@ export function NavItem({ to = '', label = '', current = false }) {
   return (
     <NavLink
       className={({ isActive }) => {
-        return isActive ? 'font-medium sm:py-6 text-blue-600' : 'font-medium text-gray-800 hover:text-gray-500 sm:py-6 dark:text-neutral-200 dark:hover:text-neutral-400';
+        return isActive ? 'font-medium sm:py-6 text-ipblue-800' : 'font-medium text-gray-800 hover:text-gray-500 sm:py-6 dark:text-neutral-200 dark:hover:text-neutral-400';
       }}
       to={to}
       aria-current='page'

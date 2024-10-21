@@ -1,5 +1,4 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@workos-inc/authkit-react';
 
 import { Button } from '../components/Button';
 import { HamburgerButton } from '../components/HamburgerButton';
@@ -12,8 +11,10 @@ import UserIcon from '../icons/User';
 import { providers, projects } from '../constants';
 import { IcePerfLogo } from './IcePerfLogo';
 
+import { useUserContext } from '../contexts/userContext';
+
 export function Header() {
-  const { user, isLoading, signIn, signUp } = useAuth();
+  const { user, isLoading, signIn, signUp } = useUserContext();
   const location = useLocation();
 
   return (
@@ -41,10 +42,14 @@ export function Header() {
             )}
           </div>
         </div>
-        <div id='navbar-collapse-with-animation' className='hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:block'>
+        <div
+          id='navbar-collapse-with-animation'
+          className='hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:block'
+        >
           <div className='flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:ps-7'>
             <NavItem label='About' to='/about' />
             <NavItem label='Results' to='/results' />
+            <NavItem label='Pricing' to='/pricing' />
 
             <NavMenu label='Providers'>
               {providers.map((provider, i) => (
