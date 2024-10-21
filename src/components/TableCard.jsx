@@ -65,7 +65,7 @@ export function TableCard({ title = '', description = '', field = '', providerDa
       name: providerName,
     }
 
-    if ( providerData[providerName].udp) {
+    if (providerData[providerName]?.udp) {
       Object.keys(providerData[providerName]).forEach((p) => {
         d[p] = providerData[providerName][p]?.value;
       })
