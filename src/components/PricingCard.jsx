@@ -14,10 +14,10 @@ export const PricingCard = ({
   selected = false,
   setSelectedPriceId,
 }) => (
-  <div className={`flex flex-col text-center rounded-xl p-8 mx-6 max-w-full md:max-w-60 ${highlighted ? 'border-2 border-blue-600 shadow-xl  dark:border-blue-700' : 'border border-gray-200 dark:border-neutral-800'}`}>
+  <div className={`flex flex-col text-center rounded-xl p-8 mx-6 max-w-full md:max-w-60 ${highlighted ? 'border-2 border-ipblue-900 shadow-xl  dark:border-ipblue-800' : 'border border-gray-200 dark:border-neutral-800'}`}>
     {!!highlightText && (
       <p className='mb-3'>
-      <span className='inline-flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-xs uppercase font-semibold bg-blue-100 text-blue-800 dark:bg-blue-600 dark:text-white'>
+      <span className='inline-flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-xs uppercase font-semibold bg-ipblue-100 text-ipblue-900 dark:bg-ipblue-900 dark:text-white'>
         {highlightText}
       </span>
       </p>
@@ -59,9 +59,10 @@ export const PricingCard = ({
     )}
 
     <Button
-      className={`mt-5 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border focus:outline-none disabled:opacity-50 disabled:pointer-events-none ${!selected ? 'border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700' : 'border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:bg-gray-50 dark:bg-transparent dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800'}`}
-      onClick={() => setSelectedPriceId(price?.id)}
+      className={`mt-5 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border focus:outline-none disabled:opacity-50 disabled:pointer-events-none`}
+      onClick={() => setSelectedPriceId(!selected ? price?.id : null)}
       disabled={!price?.id}
+      highlight={!selected}
     >
       {buttonText}
     </Button>

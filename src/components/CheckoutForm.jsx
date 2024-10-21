@@ -43,6 +43,7 @@ export const CheckoutForm = ({ className = '' }) => {
           className='w-full'
           type='submit'
           disabled={isLoading || !selectedPriceId || !user?.stripeCustomerId || user?.hasActiveSubscription}
+          highlight
         >
           Go To Checkout
         </Button>
