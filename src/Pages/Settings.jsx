@@ -8,6 +8,7 @@ import { useUserContext } from '../contexts/userContext';
 
 export function Settings() {
   const { isLoading, signOut, user } = useUserContext();
+  const customerPortalLink = import.meta.env.VITE_STRIPE_CUSTOMER_PORTAL_URL;
 
   return (
     <Layout>
@@ -23,7 +24,7 @@ export function Settings() {
               className='mx-auto mt-6 md:m-0 md:ml-6 w-full sm:max-w-72 h-10'
               label='Manage Subscription'
               disabled={!user?.hasActiveSubscription}
-              to={import.meta.env.VITE_STRIPE_CUSTOMER_PORTAL_URL}
+              to={customerPortalLink}
             />
           </ListGroupItem>
         ) : (
