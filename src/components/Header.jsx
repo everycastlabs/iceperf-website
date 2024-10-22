@@ -11,10 +11,10 @@ import UserIcon from '../icons/User';
 import { providers, projects } from '../constants';
 import { IcePerfLogo } from './IcePerfLogo';
 
-import { useUserContext } from '../contexts/userContext';
+import { useAuth } from '@workos-inc/authkit-react';
 
 export function Header() {
-  const { user, isLoading, signIn, signUp } = useUserContext();
+  const { user, isLoading, signIn, signUp } = useAuth();
   const location = useLocation();
 
   return (
