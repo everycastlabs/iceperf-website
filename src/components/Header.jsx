@@ -16,6 +16,7 @@ import { useAuth } from '@workos-inc/authkit-react';
 export function Header() {
   const { user, isLoading, signIn, signUp } = useAuth();
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search)
 
   return (
     <header className='flex flex-wrap sm:justify-start sm:flex-col z-50 w-full bg-white border-b border-gray-200 text-sm pb-2 sm:pb-0 dark:bg-neutral-800 dark:border-neutral-700'>
@@ -65,7 +66,10 @@ export function Header() {
             {!user && (
               <>
                 <Button
-                  onClick={() => signIn({ context: location.search, state: { returnTo: location.pathname } })}
+                  onClick={() => signIn({
+                    context: searchParams.get('context') ?? undefined,
+                    state: { returnTo: location.pathname },
+                  })}
                   disabled={isLoading}
                 >
                   Login
