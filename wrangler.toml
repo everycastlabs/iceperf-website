@@ -12,3 +12,4 @@ preview_id = "aa575584b93c47298f2901efb92d7d72"
 [vars]
 VITE_API_BASE_URI="https://api.iceperf.com"
 VITE_WORKOS_CLIENT_ID="client_01J15WCX82WYESEQ6V5NG8VY0G"
+VITE_STRIPE_CUSTOMER_PORTAL_URL="https://billing.stripe.com/p/login/test_eVa2accDp7pj9c4288"
