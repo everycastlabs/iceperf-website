@@ -306,6 +306,13 @@ For more details, check the [GitHub repository](https://github.com/elixir-webrtc
     isOSSProject: true,
     throughputFields: ['udp']
   },
+  stunner: {
+    name: 'Stunner',
+    description: `
+[Stunner](https://github.com/l7mp/stunner) is an open-source WebRTC ingress for Kubernetes.`,
+    isOSSProject: true,
+    throughputFields: ['udp', 'tcp', 'tls', 'dtls']
+  },
 };
 
 export const features = {
