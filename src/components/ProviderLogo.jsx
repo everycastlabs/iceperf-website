@@ -7,6 +7,7 @@ import IceCubeLogo from '../assets/icecube.svg?react'
 import XirsysLogo from '../assets/providers/xirsys-logo.svg?react'
 import MeteredLogo from '../assets/providers/metered-logo.png?react'
 import RelLogo from '../assets/providers/elixir-webrtc.svg?react'
+import StunnerLogo from '../assets/providers/stunner.svg?react'
 
 export function ProviderLogo({ provider = '', height = null }) {
   switch (provider) {
@@ -25,6 +26,8 @@ export function ProviderLogo({ provider = '', height = null }) {
     case 'rel':
     case 'elixir':
         return <RelLogo height={height} />
+    case 'stunner':
+        return <StunnerLogo height={height} />
     default:
       return <IceCubeLogo height={height} />
   }
