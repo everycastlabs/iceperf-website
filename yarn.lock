@@ -1193,21 +1193,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@workos-inc/authkit-js@npm:0.5":
-  version: 0.5.1
-  resolution: "@workos-inc/authkit-js@npm:0.5.1"
-  checksum: 10c0/0eef62a927e5642f063eb2703460711c39d264894e4168b09327fb989eae88e9da845a98da5a8db95018505102714b70cfbb4f6aedd02a8d6058db035743f5e5
+"@workos-inc/authkit-js@npm:0.7.0":
+  version: 0.7.0
+  resolution: "@workos-inc/authkit-js@npm:0.7.0"
+  checksum: 10c0/f8d4ea56f696c75615926b4aa239f8be490f35cfe1cd2b2bb0f352538d17f1f4079ae2a092d48e74011fa6b7e0b772fa1f61359376698eec06bb7b95bb96d68b
   languageName: node
   linkType: hard
 
-"@workos-inc/authkit-react@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "@workos-inc/authkit-react@npm:0.5.1"
+"@workos-inc/authkit-react@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@workos-inc/authkit-react@npm:0.7.0"
   dependencies:
-    "@workos-inc/authkit-js": "npm:0.5"
+    "@workos-inc/authkit-js": "npm:0.7.0"
   peerDependencies:
     react: ">=17"
-  checksum: 10c0/cee76f761b0492d71ec317ed0615c9e34e16423c57d87c822c9a1776c934711be5e6f0712ca5deeca3d934fb7b45fadb6aaeeefed608486a15eb6f0a307e07cd
+  checksum: 10c0/d60e5bf7c43b0d25948ab92a46fbe6d43e72f80e652e7e914f2203df4b4efc33f1320d5fb6f25c50178e7954795e462c97303bc5cca49749694c54e921747503
   languageName: node
   linkType: hard
 
@@ -3045,7 +3045,7 @@ __metadata:
     "@types/react": "npm:^18.2.66"
     "@types/react-dom": "npm:^18.2.22"
     "@vitejs/plugin-react": "npm:^4.2.1"
-    "@workos-inc/authkit-react": "npm:^0.5.1"
+    "@workos-inc/authkit-react": "npm:^0.7.0"
     apexcharts: "npm:^3.49.0"
     autoprefixer: "npm:^10.4.19"
     eslint: "npm:^8.57.0"
