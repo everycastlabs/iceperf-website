@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Button } from '../components/Button';
 import { ButtonLink } from '../components/ButtonLink';
@@ -7,6 +7,7 @@ import { ListGroup } from '../components/ListGroup';
 import { ListGroupItem } from '../components/ListGroupItem';
 import { Typography } from '../components/Typography';
 import { Input } from '../components/Input';
+import { Table, TableRow } from '../components/Table';
 
 import PlusIcon from '../icons/Plus';
 
@@ -15,17 +16,39 @@ import { useUserContext } from '../contexts/userContext';
 export function Settings() {
   const [showTurnInput, setShowTurnInput] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [turnCredentialsList, setTurnCredentialsList] = useState([]);
   const [turnCredentialsInput, setTurnCredentialsInput] = useState({});
 
   const { isLoading, signOut, user } = useUserContext();
   const customerPortalLink = import.meta.env.VITE_STRIPE_CUSTOMER_PORTAL_URL;
 
   // TODO
-  // - retrieve list of existing private TURN credentials from D1 for this user
   // - write new credentials to D1
   // - protect access based on role
 
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    const getPrivateTurnCredentials = async () => {
+      try {
+        const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-turn-credentials/${user.id}`);
+        const { credentials } = await resp.json();
+
+        if (credentials.success) {
+          setTurnCredentialsList(credentials.results);
+        } else {
+          throw new Error(credentials.err);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    getPrivateTurnCredentials();
+  }, [user]);
+
   // console.log('user', user);
+  // console.log('turnCredentialsList', turnCredentialsList);
 
   const cancelTurnInput = () => {
     setShowTurnInput(false);
@@ -47,9 +70,17 @@ export function Settings() {
         {user?.hasActiveSubscription ? (
           <>
             <ListGroupItem className='py-6' title='Private TURN Network'>
-            <Typography style='body' className='mt-0 max-w-prose'>
-              You haven&apos;t added TURN network credentials yet.
-            </Typography>
+              {turnCredentialsList.length ? (
+                <Table header={['URL', 'Username', 'Password', 'Request URL', 'API Key']}>
+                  {turnCredentialsList.map(({ url, username, password, requestUrl, apiKey}) => (
+                    <TableRow key={url || apiKey} items={[url, username, password, requestUrl, apiKey]} />
+                  ))}
+                </Table>
+              ) : (
+                <Typography style='body' className='mt-0 max-w-prose'>
+                  You haven&apos;t added TURN network credentials yet.
+                </Typography>
+              )}
             </ListGroupItem>
             <ListGroupItem className='py-6' title='TURN network credentials'>
             <Typography style='body' className='mt-0 max-w-prose'>
