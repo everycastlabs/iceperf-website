@@ -28,11 +28,11 @@ export const Table = ({ className = '', header, children }) => (
   </div>
 );
 
-export const TableRow = ({ className, items }) => (
+export const TableRow = ({ className, id, items }) => (
   <tr className={className}>
-    {!!items?.length && items.map((item) => (
+    {!!items?.length && items.map((item, idx) => (
       <td
-        key={item}
+        key={`${id}-${idx}`}
         className='px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200'
       >
         {item}
@@ -49,5 +49,6 @@ Table.propTypes = {
 
 TableRow.propTypes = {
   className: PropTypes.string,
+  id: PropTypes.string,
   items: PropTypes.array,
 };

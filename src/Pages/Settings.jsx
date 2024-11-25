@@ -10,6 +10,7 @@ import { Input } from '../components/Input';
 import { Table, TableRow } from '../components/Table';
 
 import PlusIcon from '../icons/Plus';
+import RubbishBinIcon from '../icons/RubbishBin';
 
 import { useUserContext } from '../contexts/userContext';
 
@@ -87,6 +88,24 @@ export function Settings() {
     }
   };
 
+  const deleteTurnCredential = async (id) => {
+    setIsSaving(true);
+    try {
+      const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/delete-turn-credentials/${user.id}/${id}`);
+      const result = await resp.json();
+      if (result.success) {
+        await getPrivateTurnCredentials();
+      } else {
+        throw new Error(result.err);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      cancelTurnInput();
+      setIsSaving(false);
+    }
+  }
+
   return (
     <Layout>
       <Typography style='h2' className='mb-0'>Account Settings</Typography>
@@ -96,9 +115,25 @@ export function Settings() {
           <>
             <ListGroupItem className='py-6' title='Private TURN Network'>
               {turnCredentialsList.length ? (
-                <Table header={['URL', 'Username', 'Request URL', 'API Key']}>
-                  {turnCredentialsList.map(({ url, username, requestUrl, apiKey }) => (
-                    <TableRow key={url || apiKey} items={[url, username, requestUrl, apiKey]} />
+                <Table header={['URL', 'Username', 'Request URL', 'API Key', 'Delete']}>
+                  {turnCredentialsList.map(({ id, url, username, requestUrl, apiKey }) => (
+                    <TableRow
+                      key={`turn-credentials-${id}`}
+                      id={`turn-credentials-${id}`}
+                      items={[
+                        url,
+                        username,
+                        requestUrl,
+                        apiKey,
+                        <Button
+                          key={url}
+                          disabled={isLoading || isSaving}
+                          onClick={() => deleteTurnCredential(id)}
+                        >
+                          <RubbishBinIcon />
+                        </Button>
+                      ]}
+                    />
                   ))}
                 </Table>
               ) : (
