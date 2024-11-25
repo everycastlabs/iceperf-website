@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { Button } from '../components/Button';
 import { ButtonLink } from '../components/ButtonLink';
@@ -23,29 +23,30 @@ export function Settings() {
   const customerPortalLink = import.meta.env.VITE_STRIPE_CUSTOMER_PORTAL_URL;
 
   // TODO
-  // - write new credentials to D1
   // - protect access based on role
+  // - enable deleting a row from DB
+
+  const getPrivateTurnCredentials = useCallback(async () => {
+    try {
+      const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-turn-credentials/${user.id}`);
+      const { credentials } = await resp.json();
+
+      if (credentials.success) {
+        setTurnCredentialsList(credentials.results);
+      } else {
+        throw new Error(credentials.err);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     if (!user) {
       return;
     }
-    const getPrivateTurnCredentials = async () => {
-      try {
-        const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-turn-credentials/${user.id}`);
-        const { credentials } = await resp.json();
-
-        if (credentials.success) {
-          setTurnCredentialsList(credentials.results);
-        } else {
-          throw new Error(credentials.err);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
     getPrivateTurnCredentials();
-  }, [user]);
+  }, [user, getPrivateTurnCredentials]);
 
   // console.log('user', user);
   // console.log('turnCredentialsList', turnCredentialsList);
@@ -57,9 +58,33 @@ export function Settings() {
 
   const saveTurnInput = async () => {
     setIsSaving(true);
-    // TODO write to D1
-    cancelTurnInput();
-    setIsSaving(false);
+    try {
+      const { url, username, password, requestUrl, apiKey } = turnCredentialsInput;
+      const resp = await fetch(
+        `${import.meta.env.VITE_API_BASE_URI}/api/add-turn-credentials/${user.id}`,
+        {
+          method: 'post',
+          body: JSON.stringify({
+            url: url || null,
+            username: username || null,
+            password: password || null,
+            requestUrl: requestUrl || null,
+            apiKey: apiKey || null,
+          }),
+        },
+      );
+      const result = await resp.json();
+      if (result.success) {
+        await getPrivateTurnCredentials();
+      } else {
+        throw new Error(result.err);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      cancelTurnInput();
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -71,9 +96,9 @@ export function Settings() {
           <>
             <ListGroupItem className='py-6' title='Private TURN Network'>
               {turnCredentialsList.length ? (
-                <Table header={['URL', 'Username', 'Password', 'Request URL', 'API Key']}>
-                  {turnCredentialsList.map(({ url, username, password, requestUrl, apiKey}) => (
-                    <TableRow key={url || apiKey} items={[url, username, password, requestUrl, apiKey]} />
+                <Table header={['URL', 'Username', 'Request URL', 'API Key']}>
+                  {turnCredentialsList.map(({ url, username, requestUrl, apiKey }) => (
+                    <TableRow key={url || apiKey} items={[url, username, requestUrl, apiKey]} />
                   ))}
                 </Table>
               ) : (
