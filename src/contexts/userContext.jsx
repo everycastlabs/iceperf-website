@@ -1,11 +1,12 @@
 import { createContext, useEffect, useState, useContext } from 'react';
 import { useAuth } from '@workos-inc/authkit-react';
 import PropTypes from 'prop-types';
+import { decodeJwt } from 'jose';
 
 const UserContext = createContext(true);
 
 export const UserContextProvider = ({ children }) => {
-  const { isLoading, signIn, signUp, signOut, user } = useAuth();
+  const { isLoading, signIn, signUp, signOut, user, getAccessToken } = useAuth();
   const [updatedUser, setUpdatedUser] = useState();
 
   useEffect(() => {
@@ -14,23 +15,35 @@ export const UserContextProvider = ({ children }) => {
       return;
     }
     const getStripeData = async () => {
-      const customer = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-customer/${user.id}`);
-      const customerResp = await customer.json();
+      try {
+        const customer = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-customer/${user.id}`);
+        const customerResp = await customer.json();
 
-      const stripeCustomerId = customerResp?.id;
-      let stripeSubscriptions;
-      let hasActiveSubscription = false;
-      if (stripeCustomerId) {
-        const subscriptions = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-subscriptions/${stripeCustomerId}`);
-        const respJson = await subscriptions.json();
-        stripeSubscriptions = respJson?.subscriptions;
-        hasActiveSubscription = stripeSubscriptions?.some((s) => ['active', 'trialing'].includes(s.status));
+        if (customerResp.err) {
+          throw new Error(customerResp.err);
+        }
+
+        const stripeCustomerId = customerResp?.id;
+        let stripeSubscriptions;
+        let hasActiveSubscription = false;
+        let accessToken;
+        let decoded;
+        if (stripeCustomerId) {
+          const subscriptions = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-subscriptions/${stripeCustomerId}`);
+          const respJson = await subscriptions.json();
+          stripeSubscriptions = respJson?.subscriptions;
+          hasActiveSubscription = stripeSubscriptions?.some((s) => ['active', 'trialing'].includes(s.status));
+          accessToken = await getAccessToken();
+          decoded = decodeJwt(accessToken);
+        }
+
+        setUpdatedUser({ ...user, stripeCustomerId, stripeSubscriptions, hasActiveSubscription, accessToken: decoded });
+      } catch (err) {
+        console.error(err);
       }
-
-      setUpdatedUser({ ...user, stripeCustomerId, stripeSubscriptions, hasActiveSubscription });
     };
     getStripeData();
-  }, [user]);
+  }, [user, getAccessToken]);
 
   return (
     <UserContext.Provider
