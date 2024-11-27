@@ -14,6 +14,8 @@ import RubbishBinIcon from '../icons/RubbishBin';
 
 import { useUserContext } from '../contexts/userContext';
 
+import entitlements from '../util/entitlements';
+
 export function Settings() {
   const [showTurnInput, setShowTurnInput] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -99,7 +101,9 @@ export function Settings() {
     }
   }
 
-  const hasAccessToPrivateTurn = user?.activeSubscription?.features?.find((f) => f.lookup_key === 'private-turn-credentials');
+  const hasAccessToPrivateTurn = user?.activeSubscription?.features?.find(
+    (f) => f.lookup_key === entitlements.PRIVATE_TURN_CREDENTIALS
+  );
 
   return (
     <Layout>
