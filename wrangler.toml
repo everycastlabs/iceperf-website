@@ -4,11 +4,25 @@ compatibility_date = "2024-04-22"
 
 # Bind a KV Namespace. Use KV as persistent storage for small key-value pairs.
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#kv-namespaces
+
+# For preview builds and local developments
 [[kv_namespaces]]
+binding = "iceperf-cache_preview"
+id = "19cf2c87584a4bcbbdc22a99f288f938"
+preview_id = "19cf2c87584a4bcbbdc22a99f288f938"
+
+[vars]
+VITE_API_BASE_URI="https://iceperf-fetch-data-staging.nimbleape.workers.dev"
+VITE_WORKOS_CLIENT_ID="client_01JBYTTR4VQJ0EBW8JP2K3C2ZC"
+VITE_STRIPE_CUSTOMER_PORTAL_URL="https://billing.stripe.com/p/login/test_eVa2accDp7pj9c4288"
+
+# For production builds
+[[env.production.kv_namespaces]]
 binding = "iceperf-cache"
 id = "aa575584b93c47298f2901efb92d7d72"
 preview_id = "aa575584b93c47298f2901efb92d7d72"
 
-[vars]
+[env.production.vars]
 VITE_API_BASE_URI="https://api.iceperf.com"
-VITE_WORKOS_CLIENT_ID="client_01J15WCX82WYESEQ6V5NG8VY0G"
+VITE_WORKOS_CLIENT_ID="client_01JBYTV1ZF4P1MS0GVX95GGT1Z"
+VITE_STRIPE_CUSTOMER_PORTAL_URL="https://billing.stripe.com/p/login/fZe17H3rsfuZ2Ws7ss"
