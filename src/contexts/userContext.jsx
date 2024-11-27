@@ -24,20 +24,23 @@ export const UserContextProvider = ({ children }) => {
         }
 
         const stripeCustomerId = customerResp?.id;
-        let stripeSubscriptions;
-        let hasActiveSubscription = false;
-        let accessToken;
-        let decoded;
+        let activeSubscription;
         if (stripeCustomerId) {
-          const subscriptions = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-subscriptions/${stripeCustomerId}`);
-          const respJson = await subscriptions.json();
-          stripeSubscriptions = respJson?.subscriptions;
-          hasActiveSubscription = stripeSubscriptions?.some((s) => ['active', 'trialing'].includes(s.status));
-          accessToken = await getAccessToken();
-          decoded = decodeJwt(accessToken);
+          const req = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-active-subscription/${stripeCustomerId}`);
+          const activeSubJson = await req.json();
+          activeSubscription = activeSubJson?.subscription;
         }
 
-        setUpdatedUser({ ...user, stripeCustomerId, stripeSubscriptions, hasActiveSubscription, accessToken: decoded });
+        const accessToken = await getAccessToken();
+        const decoded = decodeJwt(accessToken);
+
+        setUpdatedUser({
+          ...user,
+          stripeCustomerId,
+          activeSubscription,
+          hasActiveSubscription: !!activeSubscription,
+          accessToken: decoded,
+        });
       } catch (err) {
         console.error(err);
       }
