@@ -14,9 +14,16 @@ export const UserContextProvider = ({ children }) => {
     if (!user) {
       return;
     }
-    const getStripeData = async () => {
+    const getUserData = async () => {
+      const accessToken = await getAccessToken();
+
+      // TODO get Stripe customer and sub in a single endpoint!
       try {
-        const customer = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-customer/${user.id}`);
+        const customer = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-customer/${user.id}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
         const customerResp = await customer.json();
 
         if (customerResp.err) {
@@ -31,21 +38,18 @@ export const UserContextProvider = ({ children }) => {
           activeSubscription = activeSubJson?.subscription;
         }
 
-        const accessToken = await getAccessToken();
-        const decoded = decodeJwt(accessToken);
-
         setUpdatedUser({
           ...user,
           stripeCustomerId,
           activeSubscription,
           hasActiveSubscription: !!activeSubscription,
-          accessToken: decoded,
+          accessToken: decodeJwt(accessToken),
         });
       } catch (err) {
         console.error(err);
       }
     };
-    getStripeData();
+    getUserData();
   }, [user, getAccessToken]);
 
   return (

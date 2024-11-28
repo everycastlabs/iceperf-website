@@ -101,9 +101,7 @@ export function Settings() {
     }
   }
 
-  const hasAccessToPrivateTurn = user?.activeSubscription?.features?.find(
-    (f) => f.lookup_key === entitlements.PRIVATE_TURN_CREDENTIALS
-  );
+  const hasAccessToPrivateTurn = user?.accessToken?.entitlements?.find((e) => e === entitlements.PRIVATE_TURN_CREDENTIALS);
 
   return (
     <Layout>
