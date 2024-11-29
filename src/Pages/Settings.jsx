@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 
 import { Button } from '../components/Button';
 import { ButtonLink } from '../components/ButtonLink';
@@ -109,114 +110,74 @@ export function Settings() {
       <Typography style='h4' className='text-gray-500 mt-1'>{user?.firstName} {user?.lastName}</Typography>
       <Typography style='body' className='text-sm text-gray-500 mt-1'>{user?.email}</Typography>
       <ListGroup className='max-w-full'>
-        <ListGroupItem className={`py-6 ${!hasAccessToPrivateTurn && 'text-gray-500'}`} title='Private ICE Servers Network'>
-          {turnCredentialsList.length ? (
-            // <Table header={['URL', 'Username', 'Request URL', 'API Key', 'Delete']}>
-            <Table header={['URL', 'Username', 'Delete']}>
-              {turnCredentialsList.map(({ id, url, username }) => (
-                <TableRow
-                  key={`ice-credentials-${id}`}
-                  id={`ice-credentials-${id}`}
-                  items={[
-                    url,
-                    username,
-                    <Button
-                      key={url}
-                      disabled={isLoading || isSaving || !hasAccessToPrivateTurn}
-                      onClick={() => deleteTurnCredential(id)}
-                    >
-                      <RubbishBinIcon />
-                    </Button>
-                  ]}
+        <ListGroupItem
+          className={`py-6 ${!hasAccessToPrivateTurn && 'text-gray-500'}`}
+          title='Private ICE Servers Network'
+        >
+          <div>
+            {turnCredentialsList.length ? (
+              // <Table header={['URL', 'Username', 'Request URL', 'API Key', 'Delete']}>
+              <Table header={['URL', 'Username', 'Delete']}>
+                {turnCredentialsList.map(({ id, url, username }) => (
+                  <TableRow
+                    key={`ice-credentials-${id}`}
+                    id={`ice-credentials-${id}`}
+                    items={[
+                      url,
+                      username,
+                      <Button
+                        key={url}
+                        disabled={isLoading || isSaving || !hasAccessToPrivateTurn}
+                        onClick={() => deleteTurnCredential(id)}
+                      >
+                        <RubbishBinIcon />
+                      </Button>
+                    ]}
+                  />
+                ))}
+              </Table>
+            ) : (
+              <Typography style='body' className='mt-0 w-full text-md sm:max-w-prose text-left'>
+                You haven&apos;t added ICE server credentials yet.
+              </Typography>
+            )}
+            <div>
+              <Typography style='h4' className='mt-3 mb-2 w-full text-lg sm:max-w-prose text-left'>
+                Add new credentials
+              </Typography>
+              {showTurnInput ? (
+                <InputCredentialsForm
+                  turnCredentialsInput={turnCredentialsInput}
+                  setTurnCredentialsInput={setTurnCredentialsInput}
+                  saveTurnInput={saveTurnInput}
+                  cancelTurnInput={cancelTurnInput}
+                  isLoading={isLoading}
+                  isSaving={isSaving}
+                  hasAccessToPrivateTurn={hasAccessToPrivateTurn}
                 />
-              ))}
-            </Table>
-          ) : (
-            <Typography style='body' className='mt-0 w-full text-md sm:max-w-prose text-left'>
-              You haven&apos;t added ICE server credentials yet.
-            </Typography>
-          )}
-        </ListGroupItem>
-        <ListGroupItem className={`py-6 ${!hasAccessToPrivateTurn && 'text-gray-500'}`} title='ICE server credentials'>
-          <Typography style='body' className='mt-0 w-full text-md sm:max-w-prose text-left'>
-            Add new credentials.
-          </Typography>
-          {showTurnInput ? (
-            <div className='w-full sm:max-w-72 space-y-3'>
-              <Input
-                id='turn-url'
-                placeholder='URL'
-                label='TURN server URL'
-                required
-                value={turnCredentialsInput.url}
-                onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, url: ev.target.value } })}
-                />
-              <Input
-                id='turn-username'
-                placeholder='Username'
-                label='TURN server username'
-                value={turnCredentialsInput.username}
-                onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, username: ev.target.value } })}
-                />
-              <Input
-                id='turn-password'
-                placeholder='Password'
-                type='password'
-                label='TURN server password'
-                value={turnCredentialsInput.password}
-                onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, password: ev.target.value } })}
-                />
-              {/* <Input
-                id='turn-request-url'
-                placeholder='Request URL'
-                label='Credentials request URL'
-                value={turnCredentialsInput.requestUrl}
-                onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, requestUrl: ev.target.value } })}
-                />
-              <Input
-                id='turn-api-key'
-                placeholder='API Key'
-                label='Credentials API key'
-                value={turnCredentialsInput.apiKey}
-                onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, apiKey: ev.target.value } })}
-              /> */}
-              <div className='w-full flex flex-row justify-between space-x-3'>
-                <Button
-                  highlight
-                  className='flex-1'
-                  disabled={isLoading || isSaving || !hasAccessToPrivateTurn}
-                  onClick={saveTurnInput}
-                >
-                  Save
-                </Button>
-                <Button
-                  className='text-redBad flex-1'
-                  onClick={cancelTurnInput}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className='flex flex-col w-full sm:max-w-36 items-end space-y-3'>
-              <Button
-                className='w-full sm:max-w-20 h-10 flex justify-center'
-                disabled={!hasAccessToPrivateTurn}
-                onClick={() => setShowTurnInput(true)}
-              >
-                <PlusIcon />
-              </Button>
-              {!hasAccessToPrivateTurn && (
-                <ButtonLink
-                  className='mx-auto w-full min-w-28 h-10'
-                  label='Get Access'
-                  disabled={hasAccessToPrivateTurn}
-                  to={user?.hasActiveSubscription ? customerPortalLink : '/pricing'}
-                />
+              ) : (
+                <div className='flex w-full sm:max-w-36 items-end space-x-3'>
+                  <Button
+                    className='w-full sm:max-w-20 h-10 flex justify-center'
+                    disabled={!hasAccessToPrivateTurn}
+                    onClick={() => setShowTurnInput(true)}
+                  >
+                    <PlusIcon />
+                  </Button>
+                  {!hasAccessToPrivateTurn && (
+                    <ButtonLink
+                      className='mx-auto w-full min-w-28 h-10'
+                      label='Get Access'
+                      disabled={hasAccessToPrivateTurn}
+                      to={user?.hasActiveSubscription ? customerPortalLink : '/pricing'}
+                    />
+                  )}
+                </div>
               )}
             </div>
-          )}
+          </div>
         </ListGroupItem>
+
         {user?.hasActiveSubscription ? (
           <ListGroupItem className='py-6' title='Manage Subscription'>
             <Typography style='body' className='mt-0 w-full text-md sm:max-w-prose text-left'>
@@ -254,4 +215,80 @@ export function Settings() {
       </ListGroup>
     </Layout>
   );
+}
+
+const InputCredentialsForm = ({
+  turnCredentialsInput,
+  setTurnCredentialsInput,
+  saveTurnInput,
+  cancelTurnInput,
+  isLoading,
+  isSaving,
+  hasAccessToPrivateTurn,
+}) => (
+  <div className='w-full sm:max-w-72 space-y-3'>
+    <Input
+      id='turn-url'
+      placeholder='URL'
+      label='TURN server URL'
+      required
+      value={turnCredentialsInput.url}
+      onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, url: ev.target.value } })}
+      />
+    <Input
+      id='turn-username'
+      placeholder='Username'
+      label='TURN server username'
+      value={turnCredentialsInput.username}
+      onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, username: ev.target.value } })}
+      />
+    <Input
+      id='turn-password'
+      placeholder='Password'
+      type='password'
+      label='TURN server password'
+      value={turnCredentialsInput.password}
+      onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, password: ev.target.value } })}
+      />
+    {/* <Input
+      id='turn-request-url'
+      placeholder='Request URL'
+      label='Credentials request URL'
+      value={turnCredentialsInput.requestUrl}
+      onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, requestUrl: ev.target.value } })}
+      />
+    <Input
+      id='turn-api-key'
+      placeholder='API Key'
+      label='Credentials API key'
+      value={turnCredentialsInput.apiKey}
+      onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, apiKey: ev.target.value } })}
+    /> */}
+    <div className='w-full flex flex-row justify-between space-x-3'>
+      <Button
+        highlight
+        className='flex-1'
+        disabled={isLoading || isSaving || !hasAccessToPrivateTurn}
+        onClick={saveTurnInput}
+      >
+        Save
+      </Button>
+      <Button
+        className='text-redBad flex-1'
+        onClick={cancelTurnInput}
+      >
+        Cancel
+      </Button>
+    </div>
+  </div>
+);
+
+InputCredentialsForm.propTypes = {
+  turnCredentialsInput: PropTypes.object,
+  setTurnCredentialsInput: PropTypes.func,
+  saveTurnInput: PropTypes.func,
+  cancelTurnInput: PropTypes.func,
+  isLoading: PropTypes.bool,
+  isSaving: PropTypes.bool,
+  hasAccessToPrivateTurn: PropTypes.bool,
 }

@@ -33,7 +33,7 @@ export const TableRow = ({ className, id, items }) => (
     {!!items?.length && items.map((item, idx) => (
       <td
         key={`${id}-${idx}`}
-        className='px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200'
+        className='px-6 py-4 whitespace-nowrap text-sm text-gray-800 text-inherit dark:text-neutral-200'
       >
         {item}
       </td>
