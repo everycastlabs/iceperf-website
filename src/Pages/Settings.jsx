@@ -109,18 +109,17 @@ export function Settings() {
       <Typography style='h4' className='text-gray-500 mt-1'>{user?.firstName} {user?.lastName}</Typography>
       <Typography style='body' className='text-sm text-gray-500 mt-1'>{user?.email}</Typography>
       <ListGroup className='max-w-full'>
-        <ListGroupItem className={`py-6 ${!hasAccessToPrivateTurn && 'text-gray-500'}`} title='Private TURN Network'>
+        <ListGroupItem className={`py-6 ${!hasAccessToPrivateTurn && 'text-gray-500'}`} title='Private ICE Servers Network'>
           {turnCredentialsList.length ? (
-            <Table header={['URL', 'Username', 'Request URL', 'API Key', 'Delete']}>
-              {turnCredentialsList.map(({ id, url, username, requestUrl, apiKey }) => (
+            // <Table header={['URL', 'Username', 'Request URL', 'API Key', 'Delete']}>
+            <Table header={['URL', 'Username', 'Delete']}>
+              {turnCredentialsList.map(({ id, url, username }) => (
                 <TableRow
-                  key={`turn-credentials-${id}`}
-                  id={`turn-credentials-${id}`}
+                  key={`ice-credentials-${id}`}
+                  id={`ice-credentials-${id}`}
                   items={[
                     url,
                     username,
-                    requestUrl,
-                    apiKey,
                     <Button
                       key={url}
                       disabled={isLoading || isSaving || !hasAccessToPrivateTurn}
@@ -134,11 +133,11 @@ export function Settings() {
             </Table>
           ) : (
             <Typography style='body' className='mt-0 w-full text-md sm:max-w-prose text-left'>
-              You haven&apos;t added TURN network credentials yet.
+              You haven&apos;t added ICE server credentials yet.
             </Typography>
           )}
         </ListGroupItem>
-        <ListGroupItem className={`py-6 ${!hasAccessToPrivateTurn && 'text-gray-500'}`} title='TURN network credentials'>
+        <ListGroupItem className={`py-6 ${!hasAccessToPrivateTurn && 'text-gray-500'}`} title='ICE server credentials'>
           <Typography style='body' className='mt-0 w-full text-md sm:max-w-prose text-left'>
             Add new credentials.
           </Typography>
@@ -167,7 +166,7 @@ export function Settings() {
                 value={turnCredentialsInput.password}
                 onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, password: ev.target.value } })}
                 />
-              <Input
+              {/* <Input
                 id='turn-request-url'
                 placeholder='Request URL'
                 label='Credentials request URL'
@@ -180,7 +179,7 @@ export function Settings() {
                 label='Credentials API key'
                 value={turnCredentialsInput.apiKey}
                 onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, apiKey: ev.target.value } })}
-              />
+              /> */}
               <div className='w-full flex flex-row justify-between space-x-3'>
                 <Button
                   highlight
