@@ -32,7 +32,9 @@ export function Settings() {
   const [showCredentialsInput, setShowCredentialsInput] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [iceCredentialsList, setIceCredentialsList] = useState([]);
-  const [iceCredentialsInput, setIceCredentialsInput] = useState(defaultCredentialsInput);
+  const [iceCredentialsInput, setIceCredentialsInput] = useState({ ...defaultCredentialsInput });
+  const [canAddStunServer, setCanAddStunServer] = useState(false);
+  const [canAddTurnServer, setCanAddTurnServer] = useState(false);
 
   const { isLoading, signOut, user } = useUserContext();
   const customerPortalLink = import.meta.env.VITE_STRIPE_CUSTOMER_PORTAL_URL;
@@ -44,6 +46,21 @@ export function Settings() {
 
       if (credentials.success) {
         setIceCredentialsList(credentials.results);
+
+        // check what credentials can still be added
+        const credUrls = credentials.results.map(({ url }) => url);
+        const hasStun = credUrls.some((url) => {
+          const info = new URL(url);
+          const scheme = info.protocol.slice(0, -1); // Remove the trailing ':' from protocol
+          return scheme === 'stun' || scheme === 'stuns';
+        });
+        const hasTurn = credUrls.some((url) => {
+          const info = new URL(url);
+          const scheme = info.protocol.slice(0, -1);
+          return scheme === 'turn' || scheme === 'turns';
+        });
+        setCanAddStunServer(!hasStun);
+        setCanAddTurnServer(!hasTurn);
       } else {
         throw new Error(credentials.err);
       }
@@ -61,7 +78,7 @@ export function Settings() {
 
   const cancelCredsInput = () => {
     setShowCredentialsInput(false);
-    setIceCredentialsInput(defaultCredentialsInput);
+    setIceCredentialsInput({ ...defaultCredentialsInput });
   };
 
   const saveCredsInput = async () => {
@@ -114,7 +131,9 @@ export function Settings() {
     }
   }
 
-  const hasAccessToPrivateTurn = user?.accessToken?.entitlements?.find((e) => e === entitlements.PRIVATE_TURN_CREDENTIALS);
+  const hasAccessToPrivateIce = user?.accessToken?.entitlements?.find((e) => e === entitlements.PRIVATE_TURN_CREDENTIALS);
+
+  console.log(iceCredentialsInput);
 
   return (
     <Layout>
@@ -123,10 +142,13 @@ export function Settings() {
       <Typography style='body' className='text-sm text-gray-500 mt-1'>{user?.email}</Typography>
       <ListGroup className='max-w-full'>
         <ListGroupItem
-          className={`py-6 ${!hasAccessToPrivateTurn && 'text-gray-500'}`}
+          className={`py-6 ${!hasAccessToPrivateIce && 'text-gray-500'}`}
           title='Private ICE Servers Network'
         >
           <div className='w-full'>
+            <Typography style='body' className='mt-0 w-full text-md sm:max-w-prose text-left'>
+              You can add one STUN server and one TURN server.
+            </Typography>
             {iceCredentialsList.length ? (
               // <Table header={['URL', 'Username', 'Request URL', 'API Key', 'Delete']}>
               <Table header={['URL', 'Username', 'Delete']}>
@@ -139,7 +161,7 @@ export function Settings() {
                       username,
                       <Button
                         key={url}
-                        disabled={isLoading || isSaving || !hasAccessToPrivateTurn}
+                        disabled={isLoading || isSaving || !hasAccessToPrivateIce}
                         onClick={() => deleteTurnCredential(id)}
                       >
                         <RubbishBinIcon />
@@ -165,22 +187,24 @@ export function Settings() {
                   cancelCredsInput={cancelCredsInput}
                   isLoading={isLoading}
                   isSaving={isSaving}
-                  hasAccessToPrivateTurn={hasAccessToPrivateTurn}
+                  hasAccessToPrivateIce={hasAccessToPrivateIce}
+                  canAddStunServer={canAddStunServer}
+                  canAddTurnServer={canAddTurnServer}
                 />
               ) : (
                 <div className='flex w-full sm:max-w-36 items-end space-x-3'>
                   <Button
                     className='w-full sm:max-w-20 h-10 flex justify-center'
-                    disabled={!hasAccessToPrivateTurn}
+                    disabled={!hasAccessToPrivateIce || (!canAddStunServer && !canAddTurnServer)}
                     onClick={() => setShowCredentialsInput(true)}
                   >
                     <PlusIcon />
                   </Button>
-                  {!hasAccessToPrivateTurn && (
+                  {!hasAccessToPrivateIce && (
                     <ButtonLink
                       className='mx-auto w-full min-w-28 h-10'
                       label='Get Access'
-                      disabled={hasAccessToPrivateTurn}
+                      disabled={hasAccessToPrivateIce}
                       to={user?.hasActiveSubscription ? customerPortalLink : '/pricing'}
                     />
                   )}
@@ -229,10 +253,6 @@ export function Settings() {
   );
 }
 
-// TODO only allow one stun and one turn domain!
-
-
-
 const InputCredentialsForm = ({
   iceCredentialsInput,
   setIceCredentialsInput,
@@ -240,9 +260,9 @@ const InputCredentialsForm = ({
   cancelCredsInput,
   isLoading,
   isSaving,
-  hasAccessToPrivateTurn,
-  canAddStunServer = true, // TODO
-  canAddTurnServer = true, // TODO
+  hasAccessToPrivateIce,
+  canAddStunServer,
+  canAddTurnServer,
 }) => {
   const {
     scheme: inputScheme,
@@ -251,6 +271,8 @@ const InputCredentialsForm = ({
     username,
     password,
   } = iceCredentialsInput;
+
+  const disableInputs = (inputScheme === 'stun' && !canAddStunServer) || (inputScheme === 'turn' && !canAddTurnServer);
 
   return (
     <div className='w-full mx-auto sm:max-w-96 space-y-3'>
@@ -289,6 +311,7 @@ const InputCredentialsForm = ({
         placeholder='Domain'
         label='ICE server domain'
         required
+        disabled={disableInputs}
         value={domain}
         onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, domain: ev.target.value } })}
       />
@@ -299,7 +322,7 @@ const InputCredentialsForm = ({
             id='checkbox-udp'
             label={transport.toUpperCase()}
             checked={inputTransport[transport].enabled}
-            disabled={transport !== 'udp' && inputScheme === 'stun'}
+            disabled={disableInputs || (transport !== 'udp' && inputScheme === 'stun')}
             onClick={(ev) => setIceCredentialsInput((prev) => {
               prev.transport[transport].enabled = ev.target.checked;
               return { ...prev }
@@ -310,7 +333,7 @@ const InputCredentialsForm = ({
               id={`${transport}-transport-port`}
               placeholder='3478'
               label='Port'
-              disabled={transport !== 'udp' && inputScheme === 'stun'}
+              disabled={disableInputs || (transport !== 'udp' && inputScheme === 'stun')}
               value={inputTransport[transport].port}
               onChange={(ev) => setIceCredentialsInput((prev) => {
                 prev.transport[transport].port = ev.target.value.replace(/[^0-9]/g, '');
@@ -326,6 +349,7 @@ const InputCredentialsForm = ({
         placeholder='Username'
         label='ICE server username'
         value={username}
+        disabled={disableInputs}
         onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, username: ev.target.value } })}
       />
       <Input
@@ -334,6 +358,7 @@ const InputCredentialsForm = ({
         type='password'
         label='ICE server password'
         value={password}
+        disabled={disableInputs}
         onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, password: ev.target.value } })}
       />
       {/* <Typography>Authorization</Typography> */}
@@ -376,7 +401,7 @@ const InputCredentialsForm = ({
         <Button
           highlight
           className='flex-1'
-          disabled={isLoading || isSaving || !hasAccessToPrivateTurn}
+          disabled={isLoading || isSaving || !hasAccessToPrivateIce || disableInputs}
           onClick={saveCredsInput}
         >
           Save
@@ -401,7 +426,7 @@ InputCredentialsForm.propTypes = {
   isSaving: PropTypes.bool,
   canAddStunServer: PropTypes.bool,
   canAddTurnServer: PropTypes.bool,
-  hasAccessToPrivateTurn: PropTypes.bool,
+  hasAccessToPrivateIce: PropTypes.bool,
 }
 
 const previewServerURL = ({ scheme, domain, transport, port }) => {
