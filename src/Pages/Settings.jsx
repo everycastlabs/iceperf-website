@@ -10,6 +10,7 @@ import { Typography } from '../components/Typography';
 import { Input } from '../components/Input';
 import { Table, TableRow } from '../components/Table';
 import { Radio, RadioGroup } from '../components/Radio';
+import { Checkbox } from '../components/Checkbox';
 
 import PlusIcon from '../icons/Plus';
 import RubbishBinIcon from '../icons/RubbishBin';
@@ -18,7 +19,14 @@ import { useUserContext } from '../contexts/userContext';
 
 import entitlements from '../util/entitlements';
 
-const defaultCredentialsInput = { scheme: 'stun' };
+const defaultCredentialsInput = {
+  scheme: 'stun',
+  transport: {
+    udp: {},
+    tcp: {},
+    tls: {},
+  },
+};
 
 export function Settings() {
   const [showCredentialsInput, setShowCredentialsInput] = useState(false);
@@ -220,6 +228,10 @@ export function Settings() {
   );
 }
 
+// TODO only allow one stun and one turn domain!
+
+
+
 const InputCredentialsForm = ({
   iceCredentialsInput,
   setIceCredentialsInput,
@@ -228,44 +240,97 @@ const InputCredentialsForm = ({
   isLoading,
   isSaving,
   hasAccessToPrivateTurn,
-}) => (
-  <div className='w-full sm:max-w-72 space-y-3'>
-    <Typography type='h4'>Scheme</Typography>
-    <RadioGroup>
-      {['stun', 'turn'].map((scheme) => (
-        <Radio
-          key={`radio-${scheme}`}
-          id={`radio-${scheme}`}
-          label={scheme.toUpperCase()}
-          checked={iceCredentialsInput.scheme === scheme}
-          onClick={() => setIceCredentialsInput((prev) => { return { ...prev, scheme } })}
-        />
+  canAddStunServer = true, // TODO
+  canAddTurnServer = true, // TODO
+}) => {
+  const {
+    scheme: inputScheme, domain, transport: inputTransport } = iceCredentialsInput;
+  return (
+    <div className='w-full sm:max-w-72 space-y-3'>
+      <Typography>Scheme</Typography>
+      <RadioGroup>
+        {['stun', 'turn'].map((scheme) => {
+          let disabled = false;
+          if (
+            scheme === 'stun' && !canAddStunServer ||
+            scheme === 'turn' && !canAddTurnServer
+          ) {
+            disabled = true;
+          }
+          return (
+            <Radio
+              key={`radio-${scheme}`}
+              id={`radio-${scheme}`}
+              name='scheme-selection'
+              label={scheme.toUpperCase()}
+              checked={inputScheme === scheme}
+              disabled={disabled}
+              onClick={() => setIceCredentialsInput((prev) => {
+                prev.scheme = scheme;
+                if (scheme === 'stun') {
+                  prev.transport.tcp = {};
+                  prev.transport.tls = {};
+                }
+                return { ...prev }
+              })}
+            />
+          );
+        })}
+      </RadioGroup>
+      <Input
+        id='ice-server-domain'
+        placeholder='Domain'
+        label='ICE server domain'
+        required
+        value={domain}
+        onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, domain: ev.target.value } })}
+      />
+      <Typography>Transport</Typography>
+      {['udp', 'tcp', 'tls'].map((transport) => (
+        <div className='w-full flex gap-x-6 items-center h-12' key={`ports-${transport}`}>
+          <Checkbox
+            id='checkbox-udp'
+            label={transport.toUpperCase()}
+            checked={inputTransport[transport].enabled}
+            disabled={transport !== 'udp' && inputScheme === 'stun'}
+            onClick={(ev) => setIceCredentialsInput((prev) => {
+              prev.transport[transport].enabled = ev.target.checked;
+              return { ...prev }
+            })}
+          />
+          {inputTransport[transport].enabled && (
+            <Input
+              id={`${transport}-transport-port`}
+              placeholder='3478'
+              label='Port'
+              disabled={transport !== 'udp' && inputScheme === 'stun'}
+              value={inputTransport[transport].port}
+              onChange={(ev) => setIceCredentialsInput((prev) => {
+                prev.transport[transport].port = ev.target.value.replace(/[^0-9]/g, '');
+                return { ...prev }
+              })}
+            />
+          )}
+        </div>
       ))}
-    </RadioGroup>
-    <Input
-      id='turn-url'
-      placeholder='URL'
-      label='TURN server URL'
-      required
-      value={iceCredentialsInput.url}
-      onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, url: ev.target.value } })}
+      <Typography>Authentication</Typography>
+      <Input
+        id='turn-username'
+        placeholder='Username'
+        label='TURN server username'
+        value={iceCredentialsInput.username}
+        onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, username: ev.target.value } })}
       />
-    <Input
-      id='turn-username'
-      placeholder='Username'
-      label='TURN server username'
-      value={iceCredentialsInput.username}
-      onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, username: ev.target.value } })}
+      <Input
+        id='turn-password'
+        placeholder='Password'
+        type='password'
+        label='TURN server password'
+        value={iceCredentialsInput.password}
+        onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, password: ev.target.value } })}
       />
-    <Input
-      id='turn-password'
-      placeholder='Password'
-      type='password'
-      label='TURN server password'
-      value={iceCredentialsInput.password}
-      onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, password: ev.target.value } })}
-      />
-    {/* <Input
+      {/* <Typography>Authorization</Typography> */}
+      {/* <Input
       id='turn-request-url'
       placeholder='Request URL'
       label='Credentials request URL'
@@ -279,24 +344,33 @@ const InputCredentialsForm = ({
       value={iceCredentialsInput.apiKey}
       onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, apiKey: ev.target.value } })}
     /> */}
-    <div className='w-full flex flex-row justify-between space-x-3'>
-      <Button
-        highlight
-        className='flex-1'
-        disabled={isLoading || isSaving || !hasAccessToPrivateTurn}
-        onClick={saveCredsInput}
-      >
-        Save
-      </Button>
-      <Button
-        className='text-redBad flex-1'
-        onClick={cancelCredsInput}
-      >
-        Cancel
-      </Button>
+
+      {!!iceCredentialsInput.domain && (
+        <>
+          <Typography>Adding the following ICE servers:</Typography>
+          <Typography style='body' className='text-sm text-gray-500 mt-1'>{iceCredentialsInput.domain}</Typography>
+        </>
+      )}
+
+      <div className='w-full flex flex-row justify-between space-x-3'>
+        <Button
+          highlight
+          className='flex-1'
+          disabled={isLoading || isSaving || !hasAccessToPrivateTurn}
+          onClick={saveCredsInput}
+        >
+          Save
+        </Button>
+        <Button
+          className='text-redBad flex-1'
+          onClick={cancelCredsInput}
+        >
+          Cancel
+        </Button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 InputCredentialsForm.propTypes = {
   iceCredentialsInput: PropTypes.object,
@@ -305,5 +379,7 @@ InputCredentialsForm.propTypes = {
   cancelCredsInput: PropTypes.func,
   isLoading: PropTypes.bool,
   isSaving: PropTypes.bool,
+  canAddStunServer: PropTypes.bool,
+  canAddTurnServer: PropTypes.bool,
   hasAccessToPrivateTurn: PropTypes.bool,
 }
