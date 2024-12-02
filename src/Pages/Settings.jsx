@@ -81,17 +81,16 @@ export function Settings() {
     setIceCredentialsInput({ ...defaultCredentialsInput });
   };
 
-  const saveCredsInput = async () => {
+  const saveCredsInput = async (urls) => {
     setIsSaving(true);
     try {
-      // TODO new endpoint, new D1 table to handle the new inputs
-      const { url, username, password, requestUrl, apiKey } = iceCredentialsInput;
+      const { username, password, requestUrl, apiKey } = iceCredentialsInput;
       const resp = await fetch(
         `${import.meta.env.VITE_API_BASE_URI}/api/add-turn-credentials/${user.id}`,
         {
           method: 'post',
           body: JSON.stringify({
-            url: url || null,
+            urls: urls || null,
             username: username || null,
             password: password || null,
             requestUrl: requestUrl || null,
@@ -132,8 +131,6 @@ export function Settings() {
   }
 
   const hasAccessToPrivateIce = user?.accessToken?.entitlements?.find((e) => e === entitlements.PRIVATE_TURN_CREDENTIALS);
-
-  console.log(iceCredentialsInput);
 
   return (
     <Layout>
@@ -274,6 +271,12 @@ const InputCredentialsForm = ({
 
   const disableInputs = (inputScheme === 'stun' && !canAddStunServer) || (inputScheme === 'turn' && !canAddTurnServer);
 
+  const previewUrls = Object.keys(inputTransport)
+    .filter((transport) => inputTransport[transport].enabled)
+    .map((transport) => previewServerURL(
+      { scheme: inputScheme, domain, transport, port: inputTransport[transport]?.port }
+    ));
+
   return (
     <div className='w-full mx-auto sm:max-w-96 space-y-3'>
       <Typography>Scheme</Typography>
@@ -377,20 +380,17 @@ const InputCredentialsForm = ({
       onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, apiKey: ev.target.value } })}
     /> */}
 
-      {!!iceCredentialsInput.domain && (
+      {!!previewUrls?.length && (
         <>
           <Typography>Adding the following ICE servers:</Typography>
-          {Object.keys(inputTransport).map((transport) => {
-            if (!inputTransport[transport].enabled) {
-              return null;
-            }
+          {previewUrls.map((url) => {
             return (
               <Typography
-                key={`preview-${inputScheme}-${transport}`}
+                key={`preview-${url}`}
                 style='body'
                 className='text-sm text-gray-500 mt-1'
               >
-                {previewServerURL({ scheme: inputScheme, domain, transport, port: inputTransport[transport].port})}
+                {url}
               </Typography>
             )
           })}
@@ -402,7 +402,7 @@ const InputCredentialsForm = ({
           highlight
           className='flex-1'
           disabled={isLoading || isSaving || !hasAccessToPrivateIce || disableInputs}
-          onClick={saveCredsInput}
+          onClick={() => saveCredsInput(previewUrls)}
         >
           Save
         </Button>
@@ -431,6 +431,9 @@ InputCredentialsForm.propTypes = {
 
 const previewServerURL = ({ scheme, domain, transport, port }) => {
   let preview = '';
+  if (!domain) {
+    return preview;
+  }
   if (scheme === 'stun') {
     preview = `${scheme}:${domain}:${port}`;
   } else if (scheme === 'turn') {
