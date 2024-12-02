@@ -126,7 +126,7 @@ export function Settings() {
           className={`py-6 ${!hasAccessToPrivateTurn && 'text-gray-500'}`}
           title='Private ICE Servers Network'
         >
-          <div>
+          <div className='w-full'>
             {iceCredentialsList.length ? (
               // <Table header={['URL', 'Username', 'Request URL', 'API Key', 'Delete']}>
               <Table header={['URL', 'Username', 'Delete']}>
