@@ -348,7 +348,20 @@ const InputCredentialsForm = ({
       {!!iceCredentialsInput.domain && (
         <>
           <Typography>Adding the following ICE servers:</Typography>
-          <Typography style='body' className='text-sm text-gray-500 mt-1'>{iceCredentialsInput.domain}</Typography>
+          {Object.keys(inputTransport).map((transport) => {
+            if (!inputTransport[transport].enabled) {
+              return null;
+            }
+            return (
+              <Typography
+                key={`preview-${inputScheme}-${transport}`}
+                style='body'
+                className='text-sm text-gray-500 mt-1'
+              >
+                {previewServerURL({ scheme: inputScheme, domain, transport, port: inputTransport[transport].port})}
+              </Typography>
+            )
+          })}
         </>
       )}
 
@@ -382,4 +395,20 @@ InputCredentialsForm.propTypes = {
   canAddStunServer: PropTypes.bool,
   canAddTurnServer: PropTypes.bool,
   hasAccessToPrivateTurn: PropTypes.bool,
+}
+
+const previewServerURL = ({ scheme, domain, transport, port }) => {
+  let preview = '';
+  if (scheme === 'stun') {
+    preview = `${scheme}:${domain}:${port}`;
+  } else if (scheme === 'turn') {
+    if (transport === 'udp') {
+      preview = `${scheme}:${domain}:${port}?transport=udp`;
+    } else if (transport === 'tcp') {
+      preview = `${scheme}:${domain}:${port}?transport=tcp`;
+    } else if (transport === 'tls') {
+      preview = `turns:${domain}:${port}?transport=tcp`;
+    }
+  }
+  return preview;
 }
