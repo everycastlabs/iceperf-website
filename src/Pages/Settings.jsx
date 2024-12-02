@@ -67,6 +67,7 @@ export function Settings() {
   const saveCredsInput = async () => {
     setIsSaving(true);
     try {
+      // TODO new endpoint, new D1 table to handle the new inputs
       const { url, username, password, requestUrl, apiKey } = iceCredentialsInput;
       const resp = await fetch(
         `${import.meta.env.VITE_API_BASE_URI}/api/add-turn-credentials/${user.id}`,
@@ -244,9 +245,15 @@ const InputCredentialsForm = ({
   canAddTurnServer = true, // TODO
 }) => {
   const {
-    scheme: inputScheme, domain, transport: inputTransport } = iceCredentialsInput;
+    scheme: inputScheme,
+    domain,
+    transport: inputTransport,
+    username,
+    password,
+  } = iceCredentialsInput;
+
   return (
-    <div className='w-full sm:max-w-72 space-y-3'>
+    <div className='w-full mx-auto sm:max-w-96 space-y-3'>
       <Typography>Scheme</Typography>
       <RadioGroup>
         {['stun', 'turn'].map((scheme) => {
@@ -315,18 +322,18 @@ const InputCredentialsForm = ({
       ))}
       <Typography>Authentication</Typography>
       <Input
-        id='turn-username'
+        id='ice-auth-username'
         placeholder='Username'
-        label='TURN server username'
-        value={iceCredentialsInput.username}
+        label='ICE server username'
+        value={username}
         onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, username: ev.target.value } })}
       />
       <Input
-        id='turn-password'
+        id='ice-auth-password'
         placeholder='Password'
         type='password'
-        label='TURN server password'
-        value={iceCredentialsInput.password}
+        label='ICE server password'
+        value={password}
         onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, password: ev.target.value } })}
       />
       {/* <Typography>Authorization</Typography> */}
