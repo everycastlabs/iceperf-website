@@ -9,6 +9,7 @@ import { ListGroupItem } from '../components/ListGroupItem';
 import { Typography } from '../components/Typography';
 import { Input } from '../components/Input';
 import { Table, TableRow } from '../components/Table';
+import { Radio, RadioGroup } from '../components/Radio';
 
 import PlusIcon from '../icons/Plus';
 import RubbishBinIcon from '../icons/RubbishBin';
@@ -17,22 +18,24 @@ import { useUserContext } from '../contexts/userContext';
 
 import entitlements from '../util/entitlements';
 
+const defaultCredentialsInput = { scheme: 'stun' };
+
 export function Settings() {
-  const [showTurnInput, setShowTurnInput] = useState(false);
+  const [showCredentialsInput, setShowCredentialsInput] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [turnCredentialsList, setTurnCredentialsList] = useState([]);
-  const [turnCredentialsInput, setTurnCredentialsInput] = useState({});
+  const [iceCredentialsList, setIceCredentialsList] = useState([]);
+  const [iceCredentialsInput, setIceCredentialsInput] = useState(defaultCredentialsInput);
 
   const { isLoading, signOut, user } = useUserContext();
   const customerPortalLink = import.meta.env.VITE_STRIPE_CUSTOMER_PORTAL_URL;
 
-  const getPrivateTurnCredentials = useCallback(async () => {
+  const getPrivateCredentials = useCallback(async () => {
     try {
       const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/get-turn-credentials/${user.id}`);
       const { credentials } = await resp.json();
 
       if (credentials.success) {
-        setTurnCredentialsList(credentials.results);
+        setIceCredentialsList(credentials.results);
       } else {
         throw new Error(credentials.err);
       }
@@ -45,18 +48,18 @@ export function Settings() {
     if (!user) {
       return;
     }
-    getPrivateTurnCredentials();
-  }, [user, getPrivateTurnCredentials]);
+    getPrivateCredentials();
+  }, [user, getPrivateCredentials]);
 
-  const cancelTurnInput = () => {
-    setShowTurnInput(false);
-    setTurnCredentialsInput({});
+  const cancelCredsInput = () => {
+    setShowCredentialsInput(false);
+    setIceCredentialsInput(defaultCredentialsInput);
   };
 
-  const saveTurnInput = async () => {
+  const saveCredsInput = async () => {
     setIsSaving(true);
     try {
-      const { url, username, password, requestUrl, apiKey } = turnCredentialsInput;
+      const { url, username, password, requestUrl, apiKey } = iceCredentialsInput;
       const resp = await fetch(
         `${import.meta.env.VITE_API_BASE_URI}/api/add-turn-credentials/${user.id}`,
         {
@@ -72,14 +75,14 @@ export function Settings() {
       );
       const result = await resp.json();
       if (result.success) {
-        await getPrivateTurnCredentials();
+        await getPrivateCredentials();
       } else {
         throw new Error(result.err);
       }
     } catch (err) {
       console.error(err);
     } finally {
-      cancelTurnInput();
+      cancelCredsInput();
       setIsSaving(false);
     }
   };
@@ -90,14 +93,14 @@ export function Settings() {
       const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/delete-turn-credentials/${user.id}/${id}`);
       const result = await resp.json();
       if (result.success) {
-        await getPrivateTurnCredentials();
+        await getPrivateCredentials();
       } else {
         throw new Error(result.err);
       }
     } catch (err) {
       console.error(err);
     } finally {
-      cancelTurnInput();
+      cancelCredsInput();
       setIsSaving(false);
     }
   }
@@ -115,10 +118,10 @@ export function Settings() {
           title='Private ICE Servers Network'
         >
           <div>
-            {turnCredentialsList.length ? (
+            {iceCredentialsList.length ? (
               // <Table header={['URL', 'Username', 'Request URL', 'API Key', 'Delete']}>
               <Table header={['URL', 'Username', 'Delete']}>
-                {turnCredentialsList.map(({ id, url, username }) => (
+                {iceCredentialsList.map(({ id, url, username }) => (
                   <TableRow
                     key={`ice-credentials-${id}`}
                     id={`ice-credentials-${id}`}
@@ -145,12 +148,12 @@ export function Settings() {
               <Typography style='h4' className='mt-3 mb-2 w-full text-lg sm:max-w-prose text-left'>
                 Add new credentials
               </Typography>
-              {showTurnInput ? (
+              {showCredentialsInput ? (
                 <InputCredentialsForm
-                  turnCredentialsInput={turnCredentialsInput}
-                  setTurnCredentialsInput={setTurnCredentialsInput}
-                  saveTurnInput={saveTurnInput}
-                  cancelTurnInput={cancelTurnInput}
+                  iceCredentialsInput={iceCredentialsInput}
+                  setIceCredentialsInput={setIceCredentialsInput}
+                  saveCredsInput={saveCredsInput}
+                  cancelCredsInput={cancelCredsInput}
                   isLoading={isLoading}
                   isSaving={isSaving}
                   hasAccessToPrivateTurn={hasAccessToPrivateTurn}
@@ -160,7 +163,7 @@ export function Settings() {
                   <Button
                     className='w-full sm:max-w-20 h-10 flex justify-center'
                     disabled={!hasAccessToPrivateTurn}
-                    onClick={() => setShowTurnInput(true)}
+                    onClick={() => setShowCredentialsInput(true)}
                   >
                     <PlusIcon />
                   </Button>
@@ -218,64 +221,76 @@ export function Settings() {
 }
 
 const InputCredentialsForm = ({
-  turnCredentialsInput,
-  setTurnCredentialsInput,
-  saveTurnInput,
-  cancelTurnInput,
+  iceCredentialsInput,
+  setIceCredentialsInput,
+  saveCredsInput,
+  cancelCredsInput,
   isLoading,
   isSaving,
   hasAccessToPrivateTurn,
 }) => (
   <div className='w-full sm:max-w-72 space-y-3'>
+    <Typography type='h4'>Scheme</Typography>
+    <RadioGroup>
+      {['stun', 'turn'].map((scheme) => (
+        <Radio
+          key={`radio-${scheme}`}
+          id={`radio-${scheme}`}
+          label={scheme.toUpperCase()}
+          checked={iceCredentialsInput.scheme === scheme}
+          onClick={() => setIceCredentialsInput((prev) => { return { ...prev, scheme } })}
+        />
+      ))}
+    </RadioGroup>
     <Input
       id='turn-url'
       placeholder='URL'
       label='TURN server URL'
       required
-      value={turnCredentialsInput.url}
-      onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, url: ev.target.value } })}
+      value={iceCredentialsInput.url}
+      onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, url: ev.target.value } })}
       />
     <Input
       id='turn-username'
       placeholder='Username'
       label='TURN server username'
-      value={turnCredentialsInput.username}
-      onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, username: ev.target.value } })}
+      value={iceCredentialsInput.username}
+      onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, username: ev.target.value } })}
       />
     <Input
       id='turn-password'
       placeholder='Password'
       type='password'
       label='TURN server password'
-      value={turnCredentialsInput.password}
-      onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, password: ev.target.value } })}
+      value={iceCredentialsInput.password}
+      onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, password: ev.target.value } })}
       />
     {/* <Input
       id='turn-request-url'
       placeholder='Request URL'
       label='Credentials request URL'
-      value={turnCredentialsInput.requestUrl}
-      onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, requestUrl: ev.target.value } })}
+      value={iceCredentialsInput.requestUrl}
+      onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, requestUrl: ev.target.value } })}
       />
     <Input
       id='turn-api-key'
       placeholder='API Key'
       label='Credentials API key'
-      value={turnCredentialsInput.apiKey}
-      onChange={(ev) => setTurnCredentialsInput((prev) => { return { ...prev, apiKey: ev.target.value } })}
+      value={iceCredentialsInput.apiKey}
+      onChange={(ev) => setIceCredentialsInput((prev) => { return { ...prev, apiKey: ev.target.value } })}
     /> */}
     <div className='w-full flex flex-row justify-between space-x-3'>
       <Button
         highlight
         className='flex-1'
         disabled={isLoading || isSaving || !hasAccessToPrivateTurn}
-        onClick={saveTurnInput}
+        onClick={saveCredsInput}
       >
         Save
       </Button>
       <Button
         className='text-redBad flex-1'
-        onClick={cancelTurnInput}
+        onClick={cancelCredsInput}
       >
         Cancel
       </Button>
@@ -284,10 +299,10 @@ const InputCredentialsForm = ({
 );
 
 InputCredentialsForm.propTypes = {
-  turnCredentialsInput: PropTypes.object,
-  setTurnCredentialsInput: PropTypes.func,
-  saveTurnInput: PropTypes.func,
-  cancelTurnInput: PropTypes.func,
+  iceCredentialsInput: PropTypes.object,
+  setIceCredentialsInput: PropTypes.func,
+  saveCredsInput: PropTypes.func,
+  cancelCredsInput: PropTypes.func,
   isLoading: PropTypes.bool,
   isSaving: PropTypes.bool,
   hasAccessToPrivateTurn: PropTypes.bool,
