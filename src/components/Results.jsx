@@ -80,8 +80,8 @@ export function Results() {
               Test your private network with ICEPerf.com
             </Typography>
             <ButtonLink
-              className='mx-auto mt-6 md:m-0 md:ml-6 w-full sm:max-w-72 h-10'
-              label='Manage Subscription'
+              className='mx-auto mt-6 md:m-0 md:ml-6 w-full sm:max-w-56 h-10'
+              label={hasAccessToPrivateIce ? 'Add Credentials' : 'Get Access'}
               to={hasAccessToPrivateIce ? '/settings' : '/pricing'}
             />
           </ListGroupItem>
