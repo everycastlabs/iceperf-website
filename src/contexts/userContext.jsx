@@ -3,6 +3,8 @@ import { useAuth } from '@workos-inc/authkit-react';
 import PropTypes from 'prop-types';
 import { decodeJwt } from 'jose';
 
+import entitlements from '../util/entitlements';
+
 const UserContext = createContext(true);
 
 export const UserContextProvider = ({ children }) => {
@@ -16,6 +18,10 @@ export const UserContextProvider = ({ children }) => {
     }
     const getUserData = async () => {
       const accessToken = await getAccessToken();
+
+      if (!accessToken) {
+        return;
+      }
 
       // TODO get Stripe customer and sub in a single endpoint!
       try {
@@ -38,13 +44,18 @@ export const UserContextProvider = ({ children }) => {
           activeSubscription = activeSubJson?.subscription;
         }
 
+        const decodedToken = decodeJwt(accessToken);
+
+        const hasAccessToPrivateIce = decodedToken?.entitlements?.find((e) => e === entitlements.PRIVATE_TURN_CREDENTIALS);
+
         setUpdatedUser({
           ...user,
           stripeCustomerId,
           activeSubscription,
           hasActiveSubscription: !!activeSubscription,
-          accessToken: accessToken,
-          decodedToken: decodeJwt(accessToken),
+          accessToken,
+          decodedToken,
+          hasAccessToPrivateIce,
         });
       } catch (err) {
         console.error(err);

@@ -17,8 +17,6 @@ import RubbishBinIcon from '../icons/RubbishBin';
 
 import { useUserContext } from '../contexts/userContext';
 
-import entitlements from '../util/entitlements';
-
 const defaultCredentialsInput = {
   scheme: 'stun',
   transport: {
@@ -130,8 +128,6 @@ export function Settings() {
     }
   }
 
-  const hasAccessToPrivateIce = user?.decodedToken?.entitlements?.find((e) => e === entitlements.PRIVATE_TURN_CREDENTIALS);
-
   return (
     <Layout>
       <Typography style='h2' className='mb-0'>Account Settings</Typography>
@@ -139,7 +135,7 @@ export function Settings() {
       <Typography style='body' className='text-sm text-gray-500 mt-1'>{user?.email}</Typography>
       <ListGroup className='max-w-full'>
         <ListGroupItem
-          className={`py-6 ${!hasAccessToPrivateIce && 'text-gray-500'}`}
+          className={`py-6 ${!user?.hasAccessToPrivateIce && 'text-gray-500'}`}
           title='Private ICE Servers Network'
         >
           <div className='w-full'>
@@ -158,7 +154,7 @@ export function Settings() {
                       username,
                       <Button
                         key={url}
-                        disabled={isLoading || isSaving || !hasAccessToPrivateIce}
+                        disabled={isLoading || isSaving || !user?.hasAccessToPrivateIce}
                         onClick={() => deleteTurnCredential(id)}
                       >
                         <RubbishBinIcon />
@@ -184,7 +180,7 @@ export function Settings() {
                   cancelCredsInput={cancelCredsInput}
                   isLoading={isLoading}
                   isSaving={isSaving}
-                  hasAccessToPrivateIce={hasAccessToPrivateIce}
+                  hasAccessToPrivateIce={user?.hasAccessToPrivateIce}
                   canAddStunServer={canAddStunServer}
                   canAddTurnServer={canAddTurnServer}
                 />
@@ -192,16 +188,16 @@ export function Settings() {
                 <div className='flex w-full sm:max-w-36 items-end space-x-3'>
                   <Button
                     className='w-full sm:max-w-20 h-10 flex justify-center'
-                    disabled={!hasAccessToPrivateIce || (!canAddStunServer && !canAddTurnServer)}
+                    disabled={!user?.hasAccessToPrivateIce || (!canAddStunServer && !canAddTurnServer)}
                     onClick={() => setShowCredentialsInput(true)}
                   >
                     <PlusIcon />
                   </Button>
-                  {!hasAccessToPrivateIce && (
+                  {!user?.hasAccessToPrivateIce && (
                     <ButtonLink
                       className='mx-auto w-full min-w-28 h-10'
                       label='Get Access'
-                      disabled={hasAccessToPrivateIce}
+                      disabled={user?.hasAccessToPrivateIce}
                       to={user?.hasActiveSubscription ? customerPortalLink : '/pricing'}
                     />
                   )}
