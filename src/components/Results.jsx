@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react';
 
 import { TableCard } from '../components/TableCard';
+import { ListGroup } from '../components/ListGroup';
+import { ListGroupItem } from '../components/ListGroupItem';
+import { Typography } from '../components/Typography';
+import { ButtonLink } from '../components/ButtonLink';
 import { Layout } from '../layout/Layout';
 import { explanations } from "../constants"
+import entitlements from '../util/entitlements';
 
 import { useUserContext } from '../contexts/userContext';
 
 export function Results() {
   const [providerData, setProviderData] = useState();
+  const [privateData, setPrivateData] = useState();
   const [bestAndWorst, setBestAndWorst] = useState();
 
   const { user } = useUserContext();
@@ -51,6 +57,7 @@ export function Results() {
         });
       });
       setProviderData(providerResults);
+      setPrivateData(postsResp.privateData);
       setBestAndWorst(postsResp.bestAndWorstProvider);
     };
 
@@ -61,8 +68,26 @@ export function Results() {
     return <></>;
   }
 
+  // console.log(user)
+  const hasAccessToPrivateIce = user?.decodedToken?.entitlements?.find((e) => e === entitlements.PRIVATE_TURN_CREDENTIALS);
+
   return (
     <Layout>
+      {!Object.keys(privateData).length && (
+        <ListGroup className='max-w-full bg-ipblue-100 px-3 rounded-md'>
+          <ListGroupItem className='py-6'>
+            <Typography style='h4' className='my-0 w-full text-md sm:text-lg sm:max-w-prose text-left text-ipblue-900'>
+              Test your private network with ICEPerf.com
+            </Typography>
+            <ButtonLink
+              className='mx-auto mt-6 md:m-0 md:ml-6 w-full sm:max-w-72 h-10'
+              label='Manage Subscription'
+              to={hasAccessToPrivateIce ? '/settings' : '/pricing'}
+            />
+          </ListGroupItem>
+        </ListGroup>
+      )}
+
       {Object.keys(explanations).map((field) => {
         const metric = explanations[field];
         return (
