@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react';
+
 import { TableCard } from '../components/TableCard';
 import { Layout } from '../layout/Layout';
 import { explanations } from "../constants"
+
+import { useUserContext } from '../contexts/userContext';
 
 export function Results() {
   const [providerData, setProviderData] = useState();
   const [bestAndWorst, setBestAndWorst] = useState();
 
+  const { user } = useUserContext();
+
   useEffect(() => {
     const getPosts = async () => {
-      const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/results`);
+      const opts = user?.accessToken ? { headers: { Authorization: `Bearer ${user?.accessToken}` } } : null;
+      const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/results`, opts);
       const postsResp = await resp.json();
       // rearrange data this way:
       /*
@@ -49,7 +55,7 @@ export function Results() {
     };
 
     getPosts();
-  }, []);
+  }, [user]);
 
   if (!providerData) {
     return <></>;

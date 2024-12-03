@@ -43,7 +43,8 @@ export const UserContextProvider = ({ children }) => {
           stripeCustomerId,
           activeSubscription,
           hasActiveSubscription: !!activeSubscription,
-          accessToken: decodeJwt(accessToken),
+          accessToken: accessToken,
+          decodedToken: decodeJwt(accessToken),
         });
       } catch (err) {
         console.error(err);

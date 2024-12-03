@@ -130,7 +130,7 @@ export function Settings() {
     }
   }
 
-  const hasAccessToPrivateIce = user?.accessToken?.entitlements?.find((e) => e === entitlements.PRIVATE_TURN_CREDENTIALS);
+  const hasAccessToPrivateIce = user?.decodedToken?.entitlements?.find((e) => e === entitlements.PRIVATE_TURN_CREDENTIALS);
 
   return (
     <Layout>
