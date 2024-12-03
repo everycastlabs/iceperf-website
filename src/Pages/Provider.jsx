@@ -4,6 +4,10 @@ import { useParams } from 'react-router-dom';
 import { Layout } from '../layout/Layout'
 import { ProviderTitleAndBlurb } from '../components/ProviderTitleAndBlurb';
 import { FeaturesTable } from '../components/FeaturesTable';
+import { ListGroup } from '../components/ListGroup';
+import { ListGroupItem } from '../components/ListGroupItem';
+import { Typography } from '../components/Typography';
+import { ButtonLink } from '../components/ButtonLink';
 import TrendingUp from '../icons/TrendingUp';
 import TrendingDown from '../icons/TrendingDown';
 import { explanations, getProviderIdFromName, providersList } from '../constants';
@@ -280,8 +284,24 @@ export function Provider({ isOSSProject = false, isPrivate = false }) {
   }, [name, isOSSProject, isPrivate, user])
 
   if (!data) {
-    return <></>;
+    return (
+      <Layout>
+        <ListGroup className='max-w-full bg-ipblue-100 px-3 rounded-md'>
+          <ListGroupItem className='py-6'>
+            <Typography style='h4' className='my-0 w-full text-md sm:text-lg sm:max-w-prose text-left text-ipblue-900'>
+              Test your private network with ICEPerf.com
+            </Typography>
+            <ButtonLink
+              className='mx-auto mt-6 md:m-0 md:ml-6 w-full sm:max-w-56 h-10'
+              label={user?.hasAccessToPrivateIce ? 'Add Credentials' : 'Get Access'}
+              to={user?.hasAccessToPrivateIce ? '/settings' : '/pricing'}
+            />
+          </ListGroupItem>
+        </ListGroup>
+      </Layout>
+    );
   }
+
   return (
     <Layout>
       {/* Grid */}
