@@ -116,7 +116,7 @@ DataCard.propTypes = {
   protocol: PropTypes.string,
 };
 
-export function Provider({ isOSSProject = false }) {
+export function Provider({ isOSSProject = false, isPrivate = false }) {
   const { name } = useParams();
 
   const [data, setData] = useState();
@@ -128,12 +128,33 @@ export function Provider({ isOSSProject = false }) {
     const id = getProviderIdFromName(name);
 
     const getPosts = async () => {
-      const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/provider/${id}`);
+      let resp;
+      try {
+        if (isPrivate) {
+          console.log('sending request for private data')
+          resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/provider/private`);
+        } else {
+          resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/provider/${id}`);
+        }
+        if (!resp?.ok) {
+          throw new Error('Not ok response');
+        }
+      } catch (err) {
+        console.error('Error fetching data');
+      }
+
       const postsResp = await resp.json();
+      console.log('post resp', postsResp)
+
+      if (!postsResp?.day7data) {
+        return;
+      }
 
       let avgData = postsResp?.providerData?.[id]?.data;
       if (isOSSProject) {
         avgData = postsResp?.ossData?.[id]?.data;
+      } else if (isPrivate) {
+        avgData = postsResp?.privateData?.[id]?.data;
       }
 
       const series = [];
@@ -326,4 +347,5 @@ export function Provider({ isOSSProject = false }) {
 
 Provider.propTypes = {
   isOSSProject: PropTypes.bool,
+  isPrivate: PropTypes.bool,
 };

@@ -8,7 +8,7 @@ import { NavItem } from './NavItem';
 
 import UserIcon from '../icons/User';
 
-import { providers, projects, privateNetworks } from '../constants';
+import { providers, projects } from '../constants';
 import { IcePerfLogo } from './IcePerfLogo';
 
 import { useUserContext } from '../contexts/userContext';
@@ -53,9 +53,12 @@ export function Header() {
             <NavItem label='Pricing' to='/pricing' />
 
             <NavMenu label='Providers' to='/providers/results'>
-              {user?.hasAccessToPrivateIce && privateNetworks.map((provider, i) => (
+              {/* {user?.hasAccessToPrivateIce && privateNetworks.map((provider, i) => (
                 <NavMenuItem key={`private-${i}`} label={provider} to={`/providers/${provider.toLowerCase()}`}/>
-              ))}
+              ))} */}
+              {user?.hasAccessToPrivateIce && (
+                <NavMenuItem label='Your Network' to='/providers/your-network'/>
+              )}
               {providers.map((provider, i) => (
                 <NavMenuItem key={`provider-${i}`} label={provider} to={`/providers/${provider.toLowerCase()}`}/>
               ))}

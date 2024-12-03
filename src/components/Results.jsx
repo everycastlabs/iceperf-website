@@ -48,7 +48,6 @@ export function Results({ select = 'all' }) {
       if (!postsResp?.providerData) {
         return;
       }
-      console.log(postsResp)
 
       const providerResults = {};
       Object.keys(explanations).forEach((field) => {
