@@ -52,7 +52,7 @@ export function Header() {
             <NavItem label='Results' to='/results' />
             <NavItem label='Pricing' to='/pricing' />
 
-            <NavMenu label='Providers'>
+            <NavMenu label='Providers' to='/providers/results'>
               {user?.hasAccessToPrivateIce && privateNetworks.map((provider, i) => (
                 <NavMenuItem key={`private-${i}`} label={provider} to={`/providers/${provider.toLowerCase()}`}/>
               ))}
@@ -60,7 +60,7 @@ export function Header() {
                 <NavMenuItem key={`provider-${i}`} label={provider} to={`/providers/${provider.toLowerCase()}`}/>
               ))}
             </NavMenu>
-            <NavMenu label='Projects'>
+            <NavMenu label='Projects' to='/projects/results'>
               {projects.map((project, i) => (
                 <NavMenuItem key={`project-${i}`} label={project} to={`/projects/${project.toLowerCase()}`}/>
               ))}
