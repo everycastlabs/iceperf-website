@@ -8,13 +8,13 @@ import { NavItem } from './NavItem';
 
 import UserIcon from '../icons/User';
 
-import { providers, projects } from '../constants';
+import { providers, projects, privateNetworks } from '../constants';
 import { IcePerfLogo } from './IcePerfLogo';
 
-import { useAuth } from '@workos-inc/authkit-react';
+import { useUserContext } from '../contexts/userContext';
 
 export function Header() {
-  const { user, isLoading, signIn, signUp } = useAuth();
+  const { user, isLoading, signIn, signUp } = useUserContext();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search)
 
@@ -53,13 +53,16 @@ export function Header() {
             <NavItem label='Pricing' to='/pricing' />
 
             <NavMenu label='Providers'>
+              {user?.hasAccessToPrivateIce && privateNetworks.map((provider, i) => (
+                <NavMenuItem key={`private-${i}`} label={provider} to={`/providers/${provider.toLowerCase()}`}/>
+              ))}
               {providers.map((provider, i) => (
-                <NavMenuItem key={i} label={provider} to={`/providers/${provider.toLowerCase()}`}/>
+                <NavMenuItem key={`provider-${i}`} label={provider} to={`/providers/${provider.toLowerCase()}`}/>
               ))}
             </NavMenu>
             <NavMenu label='Projects'>
               {projects.map((project, i) => (
-                <NavMenuItem key={i} label={project} to={`/projects/${project.toLowerCase()}`}/>
+                <NavMenuItem key={`project-${i}`} label={project} to={`/projects/${project.toLowerCase()}`}/>
               ))}
             </NavMenu>
 

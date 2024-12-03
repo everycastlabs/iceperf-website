@@ -32,7 +32,9 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/pricing' element={<Pricing />} />
         <Route path='/payment-status' element={<PaymentStatus />} />
+        <Route path='/providers/results' element={<Results select='provider' />} />
         <Route path='/providers/:name' element={<Provider />} />
+        <Route path='/projects/results' element={<Results select='ossProject' />} />
         <Route path='/projects/:name' element={<Provider isOSSProject />} />
         <Route path='/settings' element={<ProtectedRoute> <Settings /> </ProtectedRoute>} />
       </Routes>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PropTypes } from 'prop-types';
 
 import { TableCard } from '../components/TableCard';
 import { ListGroup } from '../components/ListGroup';
@@ -7,11 +8,10 @@ import { Typography } from '../components/Typography';
 import { ButtonLink } from '../components/ButtonLink';
 import { Layout } from '../layout/Layout';
 import { explanations } from "../constants"
-import entitlements from '../util/entitlements';
 
 import { useUserContext } from '../contexts/userContext';
 
-export function Results() {
+export function Results({ select = 'all' }) {
   const [providerData, setProviderData] = useState();
   const [privateData, setPrivateData] = useState();
   const [bestAndWorst, setBestAndWorst] = useState();
@@ -48,28 +48,40 @@ export function Results() {
       if (!postsResp?.providerData) {
         return;
       }
+      console.log(postsResp)
 
       const providerResults = {};
       Object.keys(explanations).forEach((field) => {
         providerResults[field] = {};
-        Object.keys(postsResp.providerData).forEach((provider) => {
-          providerResults[field][provider] = postsResp.providerData[provider].data[field];
-        });
+        if (select === 'all' || select === 'private') {
+          Object.keys(postsResp.privateData).forEach((provider) => {
+            providerResults[field]['your-network'] = postsResp.privateData[provider].data[field];
+          });
+        }
+        if (select === 'all' || select === 'provider') {
+          Object.keys(postsResp.providerData).forEach((provider) => {
+            providerResults[field][provider] = postsResp.providerData[provider].data[field];
+          });
+        }
+        if (select === 'all' || select === 'ossProject') {
+          Object.keys(postsResp.ossData).forEach((provider) => {
+            providerResults[field][provider] = postsResp.ossData[provider].data[field];
+          });
+        }
       });
       setProviderData(providerResults);
       setPrivateData(postsResp.privateData);
-      setBestAndWorst(postsResp.bestAndWorstProvider);
+      setBestAndWorst(postsResp.bestAndWorstProvider); // TODO this should include all displayed results
     };
 
     getPosts();
-  }, [user]);
+  }, [user, select]);
 
   if (!providerData) {
     return <></>;
   }
 
-  // console.log(user)
-  const hasAccessToPrivateIce = user?.decodedToken?.entitlements?.find((e) => e === entitlements.PRIVATE_TURN_CREDENTIALS);
+  // console.log(providerData)
 
   return (
     <Layout>
@@ -81,8 +93,8 @@ export function Results() {
             </Typography>
             <ButtonLink
               className='mx-auto mt-6 md:m-0 md:ml-6 w-full sm:max-w-56 h-10'
-              label={hasAccessToPrivateIce ? 'Add Credentials' : 'Get Access'}
-              to={hasAccessToPrivateIce ? '/settings' : '/pricing'}
+              label={user?.hasAccessToPrivateIce ? 'Add Credentials' : 'Get Access'}
+              to={user?.hasAccessToPrivateIce ? '/settings' : '/pricing'}
             />
           </ListGroupItem>
         </ListGroup>
@@ -91,15 +103,21 @@ export function Results() {
       {Object.keys(explanations).map((field) => {
         const metric = explanations[field];
         return (
-        <TableCard
-          key={field}
-          title={metric.title}
-          description={metric.description}
-          field={field}
-          providerData={providerData[field]}
-          bestAndWorst={bestAndWorst[field]}
-        />
-      )})}
+          <TableCard
+            key={field}
+            title={metric.title}
+            description={metric.description}
+            columns={metric.columns}
+            field={field}
+            providerData={providerData[field]}
+            bestAndWorst={bestAndWorst[field]}
+          />
+        );
+      })}
     </Layout>
   );
 }
+
+Results.propTypes = {
+  select: PropTypes.string,
+};
