@@ -10,6 +10,7 @@ import { explanations, getProviderIdFromName, providersList } from '../constants
 import { fixedDecimals } from '../util/maths';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useUserContext } from '../contexts/userContext';
 
 
 function DataCard({ title = '', keyName = '', data = null, test = '', rawData = null, protocol = '' }) {
@@ -124,15 +125,17 @@ export function Provider({ isOSSProject = false, isPrivate = false }) {
   // const [throughputData, setThroughputData] = useState();
   const [dataSeries, setDataSeries] = useState([]);
 
+  const { user } = useUserContext();
+
   useEffect(() => {
-    const id = getProviderIdFromName(name);
+    const id = isPrivate ? 'your-network' : getProviderIdFromName(name);
 
     const getPosts = async () => {
       let resp;
       try {
         if (isPrivate) {
-          console.log('sending request for private data')
-          resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/provider/private`);
+          const opts = user?.accessToken ? { headers: { Authorization: `Bearer ${user.accessToken}` } } : null;
+          resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/provider/private`, opts);
         } else {
           resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/provider/${id}`);
         }
@@ -144,7 +147,6 @@ export function Provider({ isOSSProject = false, isPrivate = false }) {
       }
 
       const postsResp = await resp.json();
-      console.log('post resp', postsResp)
 
       if (!postsResp?.day7data) {
         return;
@@ -154,7 +156,7 @@ export function Provider({ isOSSProject = false, isPrivate = false }) {
       if (isOSSProject) {
         avgData = postsResp?.ossData?.[id]?.data;
       } else if (isPrivate) {
-        avgData = postsResp?.privateData?.[id]?.data;
+        avgData = postsResp?.privateData?.data;
       }
 
       const series = [];
@@ -275,7 +277,7 @@ export function Provider({ isOSSProject = false, isPrivate = false }) {
 
     getPosts();
     setId(id);
-  }, [name, isOSSProject])
+  }, [name, isOSSProject, isPrivate, user])
 
   if (!data) {
     return <></>;

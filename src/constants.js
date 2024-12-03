@@ -4,6 +4,7 @@ export const providersList = {
     description: 'User\'s private ICE network, tested by ICEPerf.com',
     isOSSProject: false,
     isPrivate: true,
+    throughputFields: ['tcp', 'tls', 'udp'],
   },
   cloudflare: {
     name: 'Cloudflare',
