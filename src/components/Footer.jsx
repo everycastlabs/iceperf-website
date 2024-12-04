@@ -8,7 +8,7 @@ export function Footer() {
       <div className="mt-auto w-full max-w-[85rem] py-10 px-4 sm:px-6 lg:px-8 lg:pt-20 mx-auto">
         {/* Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          <div className="col-span-full lg:col-span-3">
+          <div className="col-span-full lg:col-span-1">
             <Link className="flex-none text-xl font-semibold text-white" to="#" aria-label="ICEPerf">
               <IcePerfLogo kind="side" />
             </Link>
@@ -25,17 +25,18 @@ export function Footer() {
             </div>
           </div> */}
           {/* End Col */}
-
-          {/* <div className="col-span-1">
-            <h4 className="font-semibold text-gray-100">Company</h4>
+          <div className="col-span-1">
+          </div>
+          <div className="col-span-1">
+            <h4 className="font-semibold text-gray-100">Legal</h4>
 
             <div className="mt-3 grid space-y-3">
-              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="#">About us</a></p>
-              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="#">Blog</a></p>
-              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="#">Careers</a> <span className="inline ms-1 text-xs bg-blue-700 text-white py-1 px-2 rounded-lg">We&apos;re hiring</span></p>
-              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="#">Customers</a></p>
+              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="/privacy-policy">Privacy Policy</a></p>
+              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="/terms">Terms and Conditions</a></p>
+              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="/cookies">Cookie Policy</a></p>
+              {/* <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="#">Customers <span className="inline ms-1 text-xs bg-blue-700 text-white py-1 px-2 rounded-lg">We&apos;re hiring</span></a></p> */}
             </div>
-          </div> */}
+          </div>
           {/* End Col */}
 
           <div className="col-span-2">
