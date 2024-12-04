@@ -47,7 +47,7 @@ export const PricingCard = ({
         {features.map((feature) => (
           <li
             key={feature.name}
-            className='flex gap-x-2'
+            className='flex gap-x-2 text-left'
           >
             <svg className='shrink-0 mt-0.5 size-4 text-blue-600 dark:text-blue-500' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><polyline points='20 6 9 17 4 12'/></svg>
             <span className='text-gray-800 dark:text-neutral-400'>
