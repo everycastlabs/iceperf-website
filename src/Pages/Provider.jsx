@@ -4,12 +4,17 @@ import { useParams } from 'react-router-dom';
 import { Layout } from '../layout/Layout'
 import { ProviderTitleAndBlurb } from '../components/ProviderTitleAndBlurb';
 import { FeaturesTable } from '../components/FeaturesTable';
+import { ListGroup } from '../components/ListGroup';
+import { ListGroupItem } from '../components/ListGroupItem';
+import { Typography } from '../components/Typography';
+import { ButtonLink } from '../components/ButtonLink';
 import TrendingUp from '../icons/TrendingUp';
 import TrendingDown from '../icons/TrendingDown';
 import { explanations, getProviderIdFromName, providersList } from '../constants';
 import { fixedDecimals } from '../util/maths';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useUserContext } from '../contexts/userContext';
 
 
 function DataCard({ title = '', keyName = '', data = null, test = '', rawData = null, protocol = '' }) {
@@ -116,7 +121,7 @@ DataCard.propTypes = {
   protocol: PropTypes.string,
 };
 
-export function Provider({ isOSSProject = false }) {
+export function Provider({ isOSSProject = false, isPrivate = false }) {
   const { name } = useParams();
 
   const [data, setData] = useState();
@@ -124,16 +129,38 @@ export function Provider({ isOSSProject = false }) {
   // const [throughputData, setThroughputData] = useState();
   const [dataSeries, setDataSeries] = useState([]);
 
+  const { user } = useUserContext();
+
   useEffect(() => {
-    const id = getProviderIdFromName(name);
+    const id = isPrivate ? 'your-network' : getProviderIdFromName(name);
 
     const getPosts = async () => {
-      const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/provider/${id}`);
+      let resp;
+      try {
+        if (isPrivate) {
+          const opts = user?.accessToken ? { headers: { Authorization: `Bearer ${user.accessToken}` } } : null;
+          resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/provider/private`, opts);
+        } else {
+          resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/provider/${id}`);
+        }
+        if (!resp?.ok) {
+          throw new Error('Not ok response');
+        }
+      } catch (err) {
+        console.error('Error fetching data');
+      }
+
       const postsResp = await resp.json();
+
+      if (!postsResp?.day7data) {
+        return;
+      }
 
       let avgData = postsResp?.providerData?.[id]?.data;
       if (isOSSProject) {
         avgData = postsResp?.ossData?.[id]?.data;
+      } else if (isPrivate) {
+        avgData = postsResp?.privateData?.data;
       }
 
       const series = [];
@@ -254,11 +281,27 @@ export function Provider({ isOSSProject = false }) {
 
     getPosts();
     setId(id);
-  }, [name, isOSSProject])
+  }, [name, isOSSProject, isPrivate, user])
 
   if (!data) {
-    return <></>;
+    return (
+      <Layout>
+        <ListGroup className='max-w-full bg-ipblue-100 px-3 rounded-md'>
+          <ListGroupItem className='py-6'>
+            <Typography style='h4' className='my-0 w-full text-md sm:text-lg sm:max-w-prose text-left text-ipblue-900'>
+              Test your private network with ICEPerf.com
+            </Typography>
+            <ButtonLink
+              className='mx-auto mt-6 md:m-0 md:ml-6 w-full sm:max-w-56 h-10'
+              label={user?.hasAccessToPrivateIce ? 'Add Credentials' : 'Get Access'}
+              to={user?.hasAccessToPrivateIce ? '/settings' : '/pricing'}
+            />
+          </ListGroupItem>
+        </ListGroup>
+      </Layout>
+    );
   }
+
   return (
     <Layout>
       {/* Grid */}
@@ -326,4 +369,5 @@ export function Provider({ isOSSProject = false }) {
 
 Provider.propTypes = {
   isOSSProject: PropTypes.bool,
+  isPrivate: PropTypes.bool,
 };

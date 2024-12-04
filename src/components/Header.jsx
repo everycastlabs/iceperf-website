@@ -1,5 +1,4 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@workos-inc/authkit-react';
 
 import { Button } from '../components/Button';
 import { HamburgerButton } from '../components/HamburgerButton';
@@ -12,9 +11,12 @@ import UserIcon from '../icons/User';
 import { providers, projects } from '../constants';
 import { IcePerfLogo } from './IcePerfLogo';
 
+import { useUserContext } from '../contexts/userContext';
+
 export function Header() {
-  const { user, isLoading, signIn, signUp } = useAuth();
+  const { user, isLoading, signIn, signUp } = useUserContext();
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search)
 
   return (
     <header className='flex flex-wrap sm:justify-start sm:flex-col z-50 w-full bg-white border-b border-gray-200 text-sm pb-2 sm:pb-0 dark:bg-neutral-800 dark:border-neutral-700'>
@@ -41,26 +43,39 @@ export function Header() {
             )}
           </div>
         </div>
-        <div id='navbar-collapse-with-animation' className='hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:block'>
+        <div
+          id='navbar-collapse-with-animation'
+          className='hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:block'
+        >
           <div className='flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:ps-7'>
             <NavItem label='About' to='/about' />
             <NavItem label='Results' to='/results' />
+            <NavItem label='Pricing' to='/pricing' />
 
-            <NavMenu label='Providers'>
+            <NavMenu label='Providers' to='/providers/results'>
+              {/* {user?.hasAccessToPrivateIce && privateNetworks.map((provider, i) => (
+                <NavMenuItem key={`private-${i}`} label={provider} to={`/providers/${provider.toLowerCase()}`}/>
+              ))} */}
+              {user?.hasAccessToPrivateIce && (
+                <NavMenuItem label='Your Network' to='/providers/your-network'/>
+              )}
               {providers.map((provider, i) => (
-                <NavMenuItem key={i} label={provider} to={`/providers/${provider.toLowerCase()}`}/>
+                <NavMenuItem key={`provider-${i}`} label={provider} to={`/providers/${provider.toLowerCase()}`}/>
               ))}
             </NavMenu>
-            <NavMenu label='Projects'>
+            <NavMenu label='Projects' to='/projects/results'>
               {projects.map((project, i) => (
-                <NavMenuItem key={i} label={project} to={`/projects/${project.toLowerCase()}`}/>
+                <NavMenuItem key={`project-${i}`} label={project} to={`/projects/${project.toLowerCase()}`}/>
               ))}
             </NavMenu>
 
             {!user && (
               <>
                 <Button
-                  onClick={() => signIn({ context: location.search, state: { returnTo: location.pathname } })}
+                  onClick={() => signIn({
+                    context: searchParams.get('context') ?? undefined,
+                    state: { returnTo: location.pathname },
+                  })}
                   disabled={isLoading}
                 >
                   Login
