@@ -12,6 +12,9 @@ import { Results } from './Pages/Results';
 import { Provider } from './Pages/Provider';
 import { Login } from './Pages/Login';
 import { Settings } from './Pages/Settings';
+import { Cookies } from './Pages/Cookies';
+import { PrivacyPolicy } from './Pages/Privacy-Policy';
+import { Terms } from './Pages/Terms';
 import { Pricing } from './Pages/Pricing';
 import { PaymentStatus } from './Pages/PaymentStatus';
 
@@ -28,6 +31,10 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/about' element={<About />} />
+        <Route path='/cookies' element={<Cookies />} />
+        <Route path='/privacy-policy' element={<PrivacyPolicy />} />
+        <Route path='/terms' element={<Terms />} />
+
         <Route path='/results' element={<Results />} />
         <Route path='/login' element={<Login />} />
         <Route path='/pricing' element={<Pricing />} />
