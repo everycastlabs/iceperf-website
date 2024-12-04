@@ -21,7 +21,7 @@ export function Results({ select = 'all' }) {
   useEffect(() => {
     const getPosts = async () => {
       const opts = user?.accessToken ? { headers: { Authorization: `Bearer ${user.accessToken}` } } : null;
-      const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/results`, opts);
+      const resp = await fetch(`${import.meta.env.VITE_API_BASE_URI}/api/results/${select}`, opts);
       const postsResp = await resp.json();
       // rearrange data this way:
       /*
@@ -70,7 +70,7 @@ export function Results({ select = 'all' }) {
       });
       setProviderData(providerResults);
       setPrivateData(postsResp.privateData);
-      setBestAndWorst(postsResp.bestAndWorstProvider); // TODO this should include all displayed results
+      setBestAndWorst(postsResp.bestAndWorst);
     };
 
     getPosts();
