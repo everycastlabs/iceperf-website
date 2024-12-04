@@ -5,7 +5,7 @@ export function Home() {
   return (
     <main id="content">
       <Hero />
-      <Results />
+      <Results select='all' />
     </main>
   )
 }

@@ -14,7 +14,7 @@ const colours = {
   tls: 'rgb(14,30,47)',
 };
 
-export function TableCard({ title = '', description = '', field = '', providerData = null, bestAndWorst = null }) {
+export function TableCard({ title = '', description = '', field = '', columns = [], providerData = null, bestAndWorst = null }) {
 
   if (!title || !field || !providerData) {
     return <></>;
@@ -107,9 +107,7 @@ export function TableCard({ title = '', description = '', field = '', providerDa
                       </span>
                     </th>
 
-                    {field === 'avgApiResponseTime' ? (
-                      generateColumnHeaders('Response Time')
-                    ) : Object.keys(providerData.cloudflare).map((i) => {
+                    {columns.map((i) => {
                       return generateColumnHeaders(i)
                     })}
 
@@ -230,11 +228,11 @@ export function TableCard({ title = '', description = '', field = '', providerDa
             <YAxis tickFormatter={(i) => (`${i}${explanations[field].measure}`)}/>
             <Tooltip />
             <Legend verticalAlign="top"/>
-            {providerData.cloudflare?.udp && Object.keys(providerData.cloudflare).map((i, index) => (
+            {columns.includes('udp') && columns.map((i, index) => (
               <Bar key={index} dataKey={i} fill={colours[i]} />
             ))}
 
-            {!providerData.cloudflare?.udp && (
+            {!columns.includes('udp') && (
               <Bar dataKey="apiResponseTime" fill={colours.udp} />
             )}
 
@@ -251,6 +249,7 @@ TableCard.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
   field: PropTypes.string,
+  columns: PropTypes.array,
   providerData: PropTypes.object,
   bestAndWorst: PropTypes.object,
 };
