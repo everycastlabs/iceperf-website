@@ -62,7 +62,7 @@ export const PricingCardsGrid = ({ products, prices, selectedPriceId, setSelecte
             title={prod.name}
             description={prod.description}
             buttonText={selectedPriceId === price?.id ? 'Selected' : 'Select'}
-            highlightText={isAnnual && 'save with annual subscription'}
+            highlightText={isAnnual && '50% OFF'}
             price={price}
             features={prod.marketing_features}
             selected={selectedPriceId === price?.id}

@@ -3,11 +3,12 @@ import CloudflareLogo from '../assets/providers/cloudflare-official.svg?react'
 import GoogleLogo from '../assets/providers/google-logo-search-new-svgrepo-com.svg?react'
 import ExpressTurnLogo from '../assets/providers/expressturn-logo21.svg?react'
 import TwilioLogo from '../assets/providers/twilio-icon-svgrepo-com.svg?react'
-import IceCubeLogo from '../assets/icecube.svg?react'
+// import IceCubeLogo from '../assets/icecube.svg?react'
 import XirsysLogo from '../assets/providers/xirsys-logo.svg?react'
 import MeteredLogo from '../assets/providers/metered-logo.png?react'
 import RelLogo from '../assets/providers/elixir-webrtc.svg?react'
 import StunnerLogo from '../assets/providers/stunner.svg?react'
+import IcePerfLogoSide from '../assets/iceperfLogoSide.svg?react'
 
 export function ProviderLogo({ provider = '', height = null }) {
   switch (provider) {
@@ -27,9 +28,10 @@ export function ProviderLogo({ provider = '', height = null }) {
     case 'elixir':
         return <RelLogo height={height} />
     case 'stunner':
-        return <StunnerLogo height={height} />
+        return <StunnerLogo height={height} width={200} />
     default:
-      return <IceCubeLogo height={height} />
+      // return <IceCubeLogo height={height} />
+      return <IcePerfLogoSide height={height} width={200} />
   }
 }
 
