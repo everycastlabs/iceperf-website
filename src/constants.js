@@ -6,6 +6,98 @@ export const providersList = {
     isPrivate: true,
     throughputFields: ['tcp', 'tls', 'udp'],
   },
+  turnix: {
+    name: 'Turnix.io',
+    description: ``,
+    isOSSProject: false,
+    throughputFields: ['tcp', 'tls', 'udp'],
+    features: {
+      'ipv6-candidates': false,
+      '2fa': {
+        bool: false
+      },
+      'analysis-api': {
+        bool: false,
+      },
+      'credential-api': true,
+      'revoke-api-credential': false,
+      'shared-secret-auth': false,
+      'free-tier': {
+        bool: true,
+        value: '10GB'
+      },
+      locations: {
+        link: '',
+        text: ""
+      },
+      'location-based-routing': true,
+      'pay-per-gb': true,
+      'overage': {
+        value: '',
+        currency: '$'
+      },
+      'billing-model': 'egress-to-turn-client',
+      'firewall-busting-ports': {
+        bool: false,
+      },
+      'whitelabel-own-domain': {
+        bool: false,
+      },
+      'documented-ips': {
+        bool: false,
+        link: ''
+      },
+      'documentation-url': {
+        link: ''
+      }
+    },
+  },
+  turnwebrtc: {
+    name: 'TurnWebRTC',
+    description: ``,
+    isOSSProject: false,
+    throughputFields: ['tcp', 'tls', 'udp'],
+    features: {
+      'ipv6-candidates': false,
+      '2fa': {
+        bool: false
+      },
+      'analysis-api': {
+        bool: false,
+      },
+      'credential-api': true,
+      'revoke-api-credential': false,
+      'shared-secret-auth': false,
+      'free-tier': {
+        bool: true,
+        value: '10GB'
+      },
+      locations: {
+        link: '',
+        text: ""
+      },
+      'location-based-routing': true,
+      'pay-per-gb': true,
+      'overage': {
+        value: '',
+        currency: '$'
+      },
+      'billing-model': 'egress-to-turn-client',
+      'firewall-busting-ports': {
+        bool: false,
+      },
+      'whitelabel-own-domain': {
+        bool: false,
+      },
+      'documented-ips': {
+        bool: false,
+        link: ''
+      },
+      'documentation-url': {
+        link: ''
+      }
+    },
+  },
   cloudflare: {
     name: 'Cloudflare',
     description: `

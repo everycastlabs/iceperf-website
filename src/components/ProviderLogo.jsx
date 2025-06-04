@@ -9,6 +9,7 @@ import MeteredLogo from '../assets/providers/metered-logo.png?react'
 import RelLogo from '../assets/providers/elixir-webrtc.svg?react'
 import StunnerLogo from '../assets/providers/stunner.svg?react'
 import IcePerfLogoSide from '../assets/iceperfLogoSide.svg?react'
+import TurnixLogo from '../assets/providers/turnix.svg?react'
 
 export function ProviderLogo({ provider = '', height = null }) {
   switch (provider) {
@@ -29,6 +30,9 @@ export function ProviderLogo({ provider = '', height = null }) {
         return <RelLogo height={height} />
     case 'stunner':
         return <StunnerLogo height={height} width={200} />
+    case 'turnix':
+        return <TurnixLogo height={height} width={200} />
+    case 'turnwebrtc':
     default:
       // return <IceCubeLogo height={height} />
       return <IcePerfLogoSide height={height} width={200} />
