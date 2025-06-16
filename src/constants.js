@@ -8,7 +8,7 @@ export const providersList = {
   },
   turnix: {
     name: 'Turnix.io',
-    description: ``,
+    description: `Future-Ready and API-Driven STUN and TURN Server Infrastructure for your next WebRTC Project`,
     isOSSProject: false,
     throughputFields: ['tcp', 'tls', 'udp'],
     features: {
@@ -17,7 +17,7 @@ export const providersList = {
         bool: false
       },
       'analysis-api': {
-        bool: false,
+        bool: true,
       },
       'credential-api': true,
       'revoke-api-credential': false,
@@ -27,16 +27,16 @@ export const providersList = {
         value: '10GB'
       },
       locations: {
-        link: '',
-        text: ""
+        link: 'https://turnix.io/docs/api-regions',
+        text: "9"
       },
       'location-based-routing': true,
-      'pay-per-gb': true,
+      'pay-per-gb': false,
       'overage': {
-        value: '',
+        value: '0.3',
         currency: '$'
       },
-      'billing-model': 'egress-to-turn-client',
+      'billing-model': 'ingress-and-egress',
       'firewall-busting-ports': {
         bool: false,
       },
@@ -48,17 +48,17 @@ export const providersList = {
         link: ''
       },
       'documentation-url': {
-        link: ''
+        link: 'https://turnix.io/docs/api-reference/'
       }
     },
   },
   turnwebrtc: {
     name: 'TurnWebRTC',
-    description: ``,
+    description: `Seamless WebRTC connectivity, globally distributed TURN & signaling in minutes.`,
     isOSSProject: false,
-    throughputFields: ['tcp', 'tls', 'udp'],
+    throughputFields: ['udp'],
     features: {
-      'ipv6-candidates': false,
+      'ipv6-candidates': true,
       '2fa': {
         bool: false
       },
@@ -73,16 +73,16 @@ export const providersList = {
         value: '10GB'
       },
       locations: {
-        link: '',
-        text: ""
+        link: 'https://turnwebrtc.com/',
+        text: "3"
       },
-      'location-based-routing': true,
-      'pay-per-gb': true,
+      'location-based-routing': false,
+      'pay-per-gb': false,
       'overage': {
-        value: '',
+        value: '0',
         currency: '$'
       },
-      'billing-model': 'egress-to-turn-client',
+      'billing-model': 'unknown',
       'firewall-busting-ports': {
         bool: false,
       },
@@ -91,10 +91,10 @@ export const providersList = {
       },
       'documented-ips': {
         bool: false,
-        link: ''
+        link: 'https://turnwebrtc.com/portal'
       },
       'documentation-url': {
-        link: ''
+        link: 'https://turnwebrtc.com/api-docs'
       }
     },
   },
