@@ -15,18 +15,15 @@ export function Footer() {
           </div>
           {/* End Col */}
 
-          {/* <div className="col-span-1">
-            <h4 className="font-semibold text-gray-100">Product</h4>
+          <div className="col-span-1">
+            <h4 className="font-semibold text-gray-100">Company</h4>
 
             <div className="mt-3 grid space-y-3">
-              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="#">Pricing</a></p>
-              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="#">Changelog</a></p>
-              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="#">Docs</a></p>
+              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="https://everycastlabs.uk">Everycast Labs</a></p>
+              <p><a className="inline-flex gap-x-2 text-gray-400 hover:text-gray-200 dark:text-neutral-400 dark:hover:text-neutral-200" href="https://everycastlabs.uk/blog">Everycast Labs Blog</a></p>
             </div>
-          </div> */}
-          {/* End Col */}
-          <div className="col-span-1">
           </div>
+          {/* End Col */}
           <div className="col-span-1">
             <h4 className="font-semibold text-gray-100">Legal</h4>
 

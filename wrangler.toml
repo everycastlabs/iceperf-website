@@ -12,7 +12,8 @@ id = "19cf2c87584a4bcbbdc22a99f288f938"
 preview_id = "19cf2c87584a4bcbbdc22a99f288f938"
 
 [vars]
-VITE_API_BASE_URI="https://iceperf-fetch-data-staging.nimbleape.workers.dev"
+#VITE_API_BASE_URI="https://iceperf-fetch-data-staging.nimbleape.workers.dev"
+VITE_API_BASE_URI="https://api.iceperf.com"
 VITE_WORKOS_CLIENT_ID="client_01JBYTTR4VQJ0EBW8JP2K3C2ZC"
 VITE_STRIPE_CUSTOMER_PORTAL_URL="https://billing.stripe.com/p/login/test_eVa2accDp7pj9c4288"
 

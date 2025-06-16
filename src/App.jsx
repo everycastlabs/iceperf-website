@@ -17,7 +17,7 @@ import { PrivacyPolicy } from './Pages/Privacy-Policy';
 import { Terms } from './Pages/Terms';
 import { Pricing } from './Pages/Pricing';
 import { PaymentStatus } from './Pages/PaymentStatus';
-
+// add a comment
 function App() {
   const location = useLocation();
 
